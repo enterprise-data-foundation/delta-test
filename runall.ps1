@@ -7,8 +7,8 @@ If (!$Path) {
 }
 
 Else {
-    # Load & configure hqTestLite.
-    Invoke-Expression "$(Get-ItemPropertyValue -Path "HKCU:\Software\HexisData\hqTestLite" -Name "ModuleDir")\config.ps1"
+    # Load & configure deltaTest.
+    Invoke-Expression "$(Get-ItemPropertyValue -Path "HKCU:\Software\EnterpriseTestFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
 
     $GlobalNoInput = $NoInput
     $NoInput = $true

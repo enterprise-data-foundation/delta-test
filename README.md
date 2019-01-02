@@ -1,8 +1,8 @@
-# Welcome to hqTestLite!
+# Welcome to deltaTest!
 
-**hqTestLite** is an open-source, PowerShell-based testing framework. It is designed to automate the testing of complex systems (like [Enterprise Data Management](https://en.wikipedia.org/wiki/Enterprise_data_management) systems) that normally resist efficient test automation.
+**deltaTest** is an open-source, PowerShell-based testing framework. It is designed to automate the testing of complex systems (like [Enterprise Data Management](https://en.wikipedia.org/wiki/Enterprise_data_management) systems) that normally resist efficient test automation.
 
-**hqTestLite** currently supports the [Markit Enterprise Data Management](https://ihsmarkit.com/products/edm.html) platform, but can easily be adapted to support testing of any platform of any kind that meets the following prerequisites:
+**deltaTest** currently supports the [Markit Enterprise Data Management](https://ihsmarkit.com/products/edm.html) platform, but can easily be adapted to support testing of any platform of any kind that meets the following prerequisites:
 
 * It can be invoked from the Windows command line.
 * It can be induced to produce test output either via a text file or a query against a SQL Server database.
@@ -17,7 +17,7 @@ Other features:
 
 # Table of Contents
 
-- [hqTestLite in a Nutshell](#hqtestlite-in-a-nutshell)
+- [deltaTest in a Nutshell](#deltatest-in-a-nutshell)
 - [Getting Started](#getting-started)
   * [Potential Installation Issues](#potential-installation-issues)
     + [Local Execution Policy](#local-execution-policy)
@@ -46,7 +46,7 @@ Other features:
   * [dbo.tvf_Core_Split_Delimiter](#dbotvf-core-split-delimiter)
   * [dbo.usp_Core_DumpData](#dbousp-core-dumpdata)
 
-# hqTestLite in a Nutshell
+# deltaTest in a Nutshell
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/xETZWWYZsK0/0.jpg)](http://www.youtube.com/watch?v=xETZWWYZsK0 "Video Title")
 
@@ -54,26 +54,26 @@ _Click to watch the video!_
 
 # Getting Started
 
-First thing is to get hqTestLite installed. If it is already in use in your organization, some of this may already be done. Do that parts that are not.
+First thing is to get deltaTest installed. If it is already in use in your organization, some of this may already be done. Do that parts that are not.
 
 1. Clone this repository into a shared directory that is accessible to your whole development team.
 1. Copy script *config_template.ps1* to *config.ps1* and configure it with relevant environment settings.
-1. Run the scripts in the [*DB*](https://github.com/HexisData/hqTestLite/tree/master/DB) directory in the order indicated, in every DB environment where you will be performing tests. If the object names don't work with your DB object naming convention, you can change them as long as you propagate the changes through the code. Note that the *Dump_Data* stored procedure will be called by most of your test result scripts, so be sure to propagate any changes there as well!
-1. Copy the [*Test*](https://github.com/HexisData/hqTestLite/tree/master/Test) directory into an appropriate location in your version control system. Best guidance is that your tests should live right alongside your code, because they ARE code!
-1. From the [*Install*](https://github.com/HexisData/hqTestLite/tree/master/Install) directory, run the +INSTALL shortcut, accepting all defaults.
+1. Run the scripts in the [*DB*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/DB) directory in the order indicated, in every DB environment where you will be performing tests. If the object names don't work with your DB object naming convention, you can change them as long as you propagate the changes through the code. Note that the *Dump_Data* stored procedure will be called by most of your test result scripts, so be sure to propagate any changes there as well!
+1. Copy the [*Test*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/Test) directory into an appropriate location in your version control system. Best guidance is that your tests should live right alongside your code, because they ARE code!
+1. From the [*Install*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/Install) directory, run the +INSTALL shortcut, accepting all defaults.
 
 Now you are ready to run a test!
 
 1. Clone a code repository containing tests to your local machine and find the *Test* directory. Navigate into one of the test folders and open a test script: it should be obvious what is going to be tested. Now right-click on the test script file and select *Run with  PowerShell*. 
 1. Once text execution completes, find file *Result.txt* in the test directory. Open the file and scrutinize the test result. Is it what it should be?
-1. If the test result is correct, open the main **hqTestLite** repository and drag and drop your *Result.txt* file onto the *CERTIFY* shortcut you find there. The invoked PowerShell script will copy your *Result.txt* file into *Result.certified.txt* in the same location. 
+1. If the test result is correct, open the main **deltaTest** repository and drag and drop your *Result.txt* file onto the *CERTIFY* shortcut you find there. The invoked PowerShell script will copy your *Result.txt* file into *Result.certified.txt* in the same location. 
 1. Now make a code change to the process under test and run the test again. If the newly generated *Result.txt* file differs from the certified version in any way, an instance of WinMerge will open, displaying the files side-by-side, so you can visualize the diff and zero in on precisely what broke.
 1. If the code change and new result are desirable, certify the new results file. This becomes the baseline for future tests.
 1. Check any changes into your version control system so that the next developer to exercise this code can stand on your shoulders!
 
 If you run into any issues the first time through, see the sections below. 
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Potential Installation Issues
 
@@ -81,7 +81,7 @@ The **+INSTALL** script configures the local system and writes local configurati
 
 ### Local Execution Policy
 
-All **hqTestLite** tests are articulated as PowerShell scripts. The first time you run a PowerShell script on your machine, you may get an error indicating that the execution of scripts is disabled on your system. If this occurs, open a PowerShell command prompt *as administrator* and run the following command:
+All **deltaTest** tests are articulated as PowerShell scripts. The first time you run a PowerShell script on your machine, you may get an error indicating that the execution of scripts is disabled on your system. If this occurs, open a PowerShell command prompt *as administrator* and run the following command:
 
 ```powershell
 Set-ExecutionPolicy Unrestricted -Force
@@ -91,11 +91,11 @@ Click [here](https://www.mssqltips.com/sqlservertip/2702/setting-the-powershell-
 
 Note also that there is also an issue around the network location from which a script is run. Scripts that are run from an internet location, as opposed to a LAN location, raise special alerts. If your network location can be expressed either way (i.e. `//domain/resources/...` vs `//domain.com/resources/...`, choose the LAN version to minimize security alerts.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ### SQL Server Module
 
-The first time you execute a test, **hqTestLite** may attempt to download and install the *SqlServer* PowerShell module. If this occurs, you will see prompts requesting permission to run NuGet. Grant the requested permissions. 
+The first time you execute a test, **deltaTest** may attempt to download and install the *SqlServer* PowerShell module. If this occurs, you will see prompts requesting permission to run NuGet. Grant the requested permissions. 
 
 If this process breaks and you see errors indicating that the module is not connecting to SQL Server, open a PowerShell command prompt *as administrator* and run the following command:
 
@@ -103,23 +103,23 @@ If this process breaks and you see errors indicating that the module is not conn
 Install-Module -Name SqlServer -Force
 ```
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ### Markit EDM
 
-By default, **hqTestLite** is expecting Markit EDM (MEDM) v17.1.132.0 to be installed in the default installation directory on your local machine. If you are running a different version of MEDM, or from a different directory, indicate the Process Agent Path when you run the **+INSTALL** script:
+By default, **deltaTest** is expecting Markit EDM (MEDM) v17.1.132.0 to be installed in the default installation directory on your local machine. If you are running a different version of MEDM, or from a different directory, indicate the Process Agent Path when you run the **+INSTALL** script:
 
 ![MedmProcessAgentPath](Doc/MedmProcessAgentPath.PNG)
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ### WinMerge
 
-**hqTestLite** uses [WinMerge](http://winmerge.org) as its text comparison engine. If WinMerge is not installed, the **+INSTALL** script will install it unless the **-NoInput** optuion is enabled.
+**deltaTest** uses [WinMerge](http://winmerge.org) as its text comparison engine. If WinMerge is not installed, the **+INSTALL** script will install it unless the **-NoInput** optuion is enabled.
 
-**hqTestLite** expects WinMerge to reside in its default installation directory. Using an alternate text comparison engine or a non-default installation directory are provided for but are not currently enabled. 
+**deltaTest** expects WinMerge to reside in its default installation directory. Using an alternate text comparison engine or a non-default installation directory are provided for but are not currently enabled. 
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ### Changing Environments
 
@@ -129,7 +129,7 @@ To switch to a different testing environment, run the **+INSTALL** script and de
 
 ![ActiveEnvironment](Doc/ActiveEnvironment.PNG)
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 # Key Files and Directories
 
@@ -141,7 +141,7 @@ To switch to a different testing environment, run the **+INSTALL** script and de
 
 **GenerateTestData.ps1** &ndash; Generates a CSV file of random test data based on a DB table schema.
 
-**hqTestLite.psm1** &ndash; hqTestLite PowerShell module.
+**deltaTest.psm1** &ndash; deltaTest PowerShell module.
 
 **runall.ps1** &ndash; Target of the +RUNALL shortcut. Recursively executes all .PS1 scripts within a directory.
 
@@ -151,17 +151,17 @@ To switch to a different testing environment, run the **+INSTALL** script and de
 
 **Install directory** &ndash; Local installation script & artifacts.
 
-* **+INSTALL shortcut** &ndash; Double-click this shortcut to install & configure **hqTestLite** on your local machine. *You must have local admin privileges to do this!*
+* **+INSTALL shortcut** &ndash; Double-click this shortcut to install & configure **deltaTest** on your local machine. *You must have local admin privileges to do this!*
 * **install.ps1** &ndash; Target of the +INSTALL shortcut. Configures local system & sets local config.
 * **WinMerge-2.14.0-Setup.exe** &ndash; WinMerge installer.
 
 **Test directory** &ndash; Sample test repository. Copy this into source control and use it as a starting point.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 # Global Variables
 
-The hqTestLite module creates a number of global variables, whose default values are set directly in *hqTestLite.psm1*. 
+The deltaTest module creates a number of global variables, whose default values are set directly in *deltaTest.psm1*. 
 
 A number of scenarios require these values to be overridden at the local level, for example so that one developer might run his tests in environment other than DEV.
 
@@ -179,15 +179,15 @@ To create a new global variable, simply add it to *config.ps1*.
 | TextDiffParams | An array of strings representing the text comparison engine's command-line parameters. Tokens `{CurrentResult}` and `{CertfiedResult}` will be replaced by the relevant file names. | `@("/e", "/s", "/u", "/wl", "/wr", "/dl", "Current Result", "/dr", "Certified Result", "{CurrentResult}", "{CertifiedResult}"`) |
 | SuppressTextDiffPopup | When `$true`, this switch prevents the text comparison engine from being invoked in the event of a failed test. Useful for automated regression testing. | `$false` |
 | SqlScriptType | The script type token to use when `-Verbose` or `-WhatIf` are activated. Useful for troubleshooting. | `"Sql Script"` |
-| ReportFolder | The default location where *Publish-Results* will place test results reports. | `"C:\hqTestLite\Results"` |
+| ReportFolder | The default location where *Publish-Results* will place test results reports. | `"C:\deltaTest\Results"` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 # Cmdlets
 
-hqTestLite features the following cmdlets. Most are used internally, but any may be used in your test scripts or elsewhere.
+deltaTest features the following cmdlets. Most are used internally, but any may be used in your test scripts or elsewhere.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Confirm-File
 
@@ -215,7 +215,7 @@ Confirm-File `
 | -TextDiffExe | Optional. The local path to your text comparison engine's executable (WinMerge by default). Defaults to the value of `$Global:TextDiffExe`.<br /><br />Ex:`-TextDiffExe "C:\Program Files (x86)\WinMerge\WinMergeU.exe"` |
 | -TextDiffParams | Optional. An array of strings representing the text comparison engine's command-line parameters. Tokens `{CurrentResult}` and `{CertfiedResult}` will be replaced by the relevant file names. Defaults to the value of `$Global:TextDiffParams`. <br /><br />Ex: `-TextDiffParams @("/e", "/s", "/u", "/wl", "/wr", "/dl", "Current Result", "/dr", "Certified Result", "{CurrentResult}", "{CertifiedResult}"`) |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Export-CsvTestData
 
@@ -266,7 +266,7 @@ Export-CsvTestData `
 | -MaxInt | Optional. Maximum value for randomly generated integer-type values. Defaults to 10.<br /><br />Ex: `-MaxInt 10.0` |
 | -MaxStrLen | Optional. Maximum length of generated character strings. Defaults to 32.<br /><br />Ex: `-MaxStrLen 32` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Import-CsvTable
 
@@ -294,7 +294,7 @@ Import-CsvTable `
 | -DbName   | Optional. The target SQL Server database name. Defaults to the value of `$Global:MedmDbName`.<br /><br />Ex: `-DbName "MyDb"` |
 | -CsvPath  | Required. The path to the CSV file to be loaded. Relative paths will be resolved relative to the script execution patrh.<br /><br />Ex: `-CsvPath "./SetupSql/T_MASTER_SEC.csv"` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Invoke-MedmComponent
 
@@ -330,7 +330,7 @@ Invoke-MedmComponent `
 | -CleanupSqlDir | Optional. A directory containing SQL scripts to be executed following component invocation. Relative paths will be resolved relative to the current directory. If omitted, defaults to the current directory. <br /><br />Ex: `-CleanupSqlDir ".\CleanupSql"` |
 | -CleanupSqlFiles | Optional. A comma-delimited list of RegEx patterns indicating SQL script files to be executed following component invocation. All must be nested within the directory indicated by `-CleanupSqlDir`. Defaults to `".+\.(?:sql|csv)"` <br /><br />Ex: `-CleanupSqlFiles "MyCleanupSqlFile1\.sql,MyCleanupSqlFile2\.sql"` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Invoke-SqlScripts
 
@@ -363,7 +363,7 @@ Invoke-SqlScripts `
 | -OutputTable | Switch. If present, causes output data to be formatted as a table. Otherwise output data is formatted as a list. <br /><br />Ex: `-OutputTable` |
 | -ScriptType | Optional. Differentiates different script types in conjunction with the `-Verbose` and `-WhatIf` switches. Defaults to the value of `$Global:SqlScriptType`. <br /><br />Ex: `-ScriptType "Sql Script"` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Publish-Results
 
@@ -382,7 +382,7 @@ Publish-Results `
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| -ReportFolder | Optional. Points to the folder that should contain the generated report. If omitted, defaults to `$Global:ReportFolder`.<br /><br />Ex: `-ReportFolder "C:\hqTestLite\Results"` |
+| -ReportFolder | Optional. Points to the folder that should contain the generated report. If omitted, defaults to `$Global:ReportFolder`.<br /><br />Ex: `-ReportFolder "C:\deltaTest\Results"` |
 | -TestSuiteName | Required. The name of the test suite. Can be whatever string value you choose.<br /><br />Ex: `-TestSuiteName "Load Tests"` |
 | -Results | Required. An array containing test results objects returned from calls to `Test-MedmComponent`. <br /><br />Ex: `-Results $MyResults` |
 | -ReportFormat | Optional. The desired report format. Defaults to `"JUnit"`.<br /><br />Ex: `-ReportFormat "JUnit"` |
@@ -391,7 +391,7 @@ Publish-Results `
 
 A string value containing the path to the report file.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Read-UserEntry
 
@@ -414,7 +414,7 @@ Read-UserEntry `
 | -Default | Optional. Default value, which the user can accept by pressing the Enter key.<br /><br />Ex: `-Default "0"` |
 | -Pattern | Optional. Regex pattern against user input will be evaluated. Defaults to ".\*" <br /><br />Ex: `-Pattern "\d+"` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Show-Execution
 
@@ -435,7 +435,7 @@ Read-UserEntry `
 | -Result | Test result object.<br /><br />Ex: `-Result $result ` |
 | -Message | Optional. Message to be displayed following test execution.<br /><br />Ex: `-Message "Test complete!" ` |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## Test-MedmComponent
 
@@ -507,13 +507,13 @@ An object with the following properties:
 * Time &ndash; The execution time of the Markit EDM Component being tested
 * Reason &ndash; if Status is `FAILED`, Reason will contain the diff results showing where the test result file is different from the certified file.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 # Scripts
 
-The hqTestLite repository contains a number of scripts that provide utility functions or leverage the module in useful ways.
+The deltaTest repository contains a number of scripts that provide utility functions or leverage the module in useful ways.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## cert.ps1
 
@@ -521,25 +521,25 @@ This script powers the +CERTIFY shortcut in the main directory of the repository
 
 For example, *Result.txt* would generate *Result.certified.txt*.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## GenerateTestData.ps1
 
 This script generates a CSV of test data based on a database table schema, with an interactive user experience. The script leverages cmdlets *Read-UserEntry* and *Export-CsvTestData*.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## runall.ps1
 
 This script powers the +RUNALL shortcut in the main directory of the repository. When a user drops a directory onto this shortcut, all .PS1 scripts inside the directory are executed with recursion.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 # Database Objects
 
 The DB directory contains a number of database objects intended to assist in the extraction of test results.
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## dbo.tvf_Core_Rows
 
@@ -551,7 +551,7 @@ This table-valued function generates a sequence of integers as a one-column rows
 |--|:--:|:--|
 | @n | int | Number of rows to generate. |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## dbo.tvf_Core_Split_Delimiter
 
@@ -564,7 +564,7 @@ This table-valued function splits a delimited string into a rowset.
 | @String | nvarchar(max) | Delimited string. |
 | @Delimiter| nvarchar(255) | String delimiter. Multiple-character delimiters are allowed. |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)
 
 ## dbo.usp_Core_DumpData
 
@@ -581,4 +581,4 @@ This stored procedure dynamically selects data from a table or a view. It is the
 | @Where| nvarchar(max) | NULL | Optional. Logical expression that will be applied to the query in a WHERE clause. |
 | @OrderBy| nvarchar(max) | NULL | Optional. Column list that will be applied to the query in an ORDER BY clause. |
 
-[Back to Top](#welcome-to-hqtestlite)
+[Back to Top](#welcome-to-deltatest)

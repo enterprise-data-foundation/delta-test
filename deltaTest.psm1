@@ -345,7 +345,7 @@ function Publish-Results {
 
 	if ($ReportFormat -eq "JUnit") {
 		$template = @'
-<testsuite name="" tests="" failures="" timestamp="" time="" package="hqTestLite">
+<testsuite name="" tests="" failures="" timestamp="" time="" package="deltaTest">
 <testcase classname="" name="" time="">
     <failure type="" message=""/>
 </testcase>
@@ -381,7 +381,7 @@ function Publish-Results {
 		    }
 		    else
 		    {
-				$newTestCase.failure.type = "hqTestLite.Fail"
+				$newTestCase.failure.type = "deltaTest.Fail"
 				#$newTestCase.failure.InnerText = Format-ErrorRecord $result.Reason
 		        $newTestCase.failure.message = $result.Reason 
 		    }

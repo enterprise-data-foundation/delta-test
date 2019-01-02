@@ -38,10 +38,10 @@ else
 }
 
 $ModuleDir = Split-Path $PSScriptRoot -Parent
-$RegistryPath = "HKCU:\Software\HexisData\hqTestLite"
+$RegistryPath = "HKCU:\Software\EnterpriseTestFoundation\deltaTest"
 
 # BEGIN
-Write-Host "`nThank you for installing hqTestLite!"
+Write-Host "`nThank you for installing deltaTest!"
 
 # Check PS Version
 Write-Host "`nChecking PowerShell version..."
@@ -52,7 +52,7 @@ If ($PSVersionTable.PSVersion.Major -ge $MinPSVersion) {
     Write-Host "No change required."
 }
 Else {
-	Write-Host "ERROR: hqTestLite requires Powershell version $MinPSVersion or better!" -ForegroundColor Yellow
+	Write-Host "ERROR: deltaTest requires Powershell version $MinPSVersion or better!" -ForegroundColor Yellow
 	[void](Read-Host "`nPress Enter to exit")
 	Exit
 }	
@@ -96,7 +96,7 @@ Invoke-Expression "$ModuleDir\config.ps1 -Install"
 
 Write-Host "`n$RegistryPath\ModuleDir = $ModuleDir"
 New-ItemProperty -Path $RegistryPath -Name "ModuleDir" -Value $ModuleDir -PropertyType String -Force | Out-Null
-[Environment]::SetEnvironmentVariable("hqTestLite", $ModuleDir, "Machine")
+[Environment]::SetEnvironmentVariable("deltaTest", $ModuleDir, "Machine")
 
 If (!$NoInput) { $Global:NoInput = ($(Read-UserEntry -Label "Suppress user input for unattended testing" -Default $(If ($Global:NoInput) { "Y" } Else { "N" }) -Pattern "Y|N") -eq "Y") }
 Write-Host "`n$RegistryPath\NoInput = $Global:NoInput"
@@ -129,5 +129,5 @@ If (!$Global:NoInput) {
 }
 
 # END
-Write-Host "`nLocal hqTestLite installation complete!"
+Write-Host "`nLocal deltaTest installation complete!"
 If (!$Global:NoInput) { [void](Read-Host "`nPress Enter to exit") }

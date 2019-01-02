@@ -3,7 +3,7 @@
 )
 
 # Pull global variables from Windows Registry.
-$RegistryPath = "HKCU:\Software\HexisData\hqTestLite"
+$RegistryPath = "HKCU:\Software\EnterpriseTestFoundation\deltaTest"
 Get-Item -Path $RegistryPath | Select-Object -ExpandProperty Property | ForEach-Object {
     $PropertyName = $_
     switch -Wildcard ($(Get-ItemPropertyValue -Path $RegistryPath -Name $PropertyName).GetType()) {
@@ -31,7 +31,7 @@ If (!$TextDiffParams) { $Global:TextDiffParams = @("/e", "/s", "/u", "/wl", "/wr
 If (!$SqlScriptType) { $Global:SqlScriptType = "Sql Script" }
 
 # Default directory for report files..
-If (!$ReportFolder) { $Global:ReportFolder = "C:\hqTestLite\Results" }
+If (!$ReportFolder) { $Global:ReportFolder = "C:\deltaTest\Results" }
 
 # Execute tests with user input by default.
 If (!$NoInput) { $Global:NoInput = $false }
@@ -66,5 +66,5 @@ switch ($ActiveEnvironment) {
     }
 }
 
-# Import hqTestLite module.
-Import-Module "$ModuleDir\hqTestLite.psm1" -NoClobber
+# Import deltaTest module.
+Import-Module "$ModuleDir\deltaTest.psm1" -NoClobber
