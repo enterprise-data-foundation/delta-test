@@ -48,7 +48,7 @@ Other features:
 
 # deltaTest in a Nutshell
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/xETZWWYZsK0/0.jpg)](http://www.youtube.com/watch?v=xETZWWYZsK0 "Video Title")
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/IZcik7VR1ZI/0.jpg)](http://www.youtube.com/watch?v=IZcik7VR1ZI "deltaTest in a Nutshell")
 
 _Click to watch the video, or click [here](https://github.com/enterprise-test-foundation/delta-test/wiki/deltaTest-in-a-Nutshell) for a transcript._
 
