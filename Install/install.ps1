@@ -1,5 +1,5 @@
 ﻿param(
-    [bool]$NoInput,
+    [string]$NoInputStr,
     [string]$ActiveEnvironment,
     [string]$MedmProcessAgentPath
 )
@@ -26,7 +26,7 @@ else
     $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
 
     $newProcess.Arguments = $myInvocation.MyCommand.Definition;
-    $newProcess.Arguments += " -NoInput `$$NoInput"
+    if ($NoInputStr) { $newProcess.Arguments += " -NoInputStr `$$NoInputStr" }
     if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment $ActiveEnvironment" } 
     if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath $MedmProcessAgentPath" } 
 
@@ -87,8 +87,7 @@ Else {
 Write-Host "`nConfiguring Windows Registry... "
 
 If (!(Test-Path $RegistryPath)) { New-Item -Path $RegistryPath -Force | Out-Null }
-
-$Global:NoInput = $NoInput
+if ($NoInputStr) { $Global:NoInput = $(If ($NoInputStr -eq "True") { $True } Else { $False }) }
 if ($ActiveEnvironment) { $Global:ActiveEnvironment = $ActiveEnvironment }
 if ($MedmProcessAgentPath) { $Global:MedmProcessAgentPath = $MedmProcessAgentPath }
 
@@ -98,7 +97,7 @@ Write-Host "`n$RegistryPath\ModuleDir = $ModuleDir"
 New-ItemProperty -Path $RegistryPath -Name "ModuleDir" -Value $ModuleDir -PropertyType String -Force | Out-Null
 [Environment]::SetEnvironmentVariable("deltaTest", $ModuleDir, "Machine")
 
-If (!$NoInput) { $Global:NoInput = ($(Read-UserEntry -Label "Suppress user input for unattended testing" -Default $(If ($Global:NoInput) { "Y" } Else { "N" }) -Pattern "Y|N") -eq "Y") }
+If (!$NoInputStr) { $Global:NoInput = ($(Read-UserEntry -Label "Suppress user input for unattended testing" -Default $(If ($Global:NoInput) { "Y" } Else { "N" }) -Pattern "Y|N") -eq "Y") }
 Write-Host "`n$RegistryPath\NoInput = $Global:NoInput"
 New-ItemProperty -Path $RegistryPath -Name "NoInput" -Value $Global:NoInput -PropertyType Binary -Force | Out-Null
 
