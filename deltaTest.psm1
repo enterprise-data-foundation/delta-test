@@ -443,7 +443,6 @@ function Read-UserEntry {
 
 function Show-Execution {
     Param(
-        [Parameter(Mandatory = $True)]
         [PSObject]$Result,
 
         [string]$Message = ""
