@@ -38,7 +38,7 @@ else
 }
 
 $ModuleDir = Split-Path $PSScriptRoot -Parent
-$RegistryPath = "HKCU:\Software\EnterpriseTestFoundation\deltaTest"
+$RegistryPath = "HKLM:\Software\EnterpriseTestFoundation\deltaTest"
 
 # BEGIN
 Write-Host "`nThank you for installing deltaTest!"
