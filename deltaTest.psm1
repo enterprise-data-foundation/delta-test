@@ -252,7 +252,7 @@ function Invoke-MedmComponent {
 
 	# Compose MEDM component invocation.
     $params = "/server:$($DbServer) /db:$($DbName) /integrated:yes /component:$($ComponentType) /process:`"$($ComponentName)`" /usedefaultforparams:yes"
-    if ($SolutionParams) {$params = $params + " /parameters:`"" + $SolutionParams.Replace(":", "`":`"").Replace("=", "`"=`"") + "`""}
+    if ($ConfigurableParams) {$params = $params + " /parameters:`"" + $ConfigurableParams.Replace(":", "`":`"").Replace("=", "`"=`"") + "`""}
 
 	# Execute MEDM solution.
     "`nBeginning execution of MEDM $($ComponentType) `"$($ComponentName)`" on DB $($DbServer)\$($DbName)" | Write-Host  
