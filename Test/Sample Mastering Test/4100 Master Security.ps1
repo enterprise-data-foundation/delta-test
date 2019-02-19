@@ -1,5 +1,5 @@
 # Load & configure deltaTest.
-Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseTestFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
+Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseDataFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
 
 # Execute test.
 $result = Test-MedmComponent `

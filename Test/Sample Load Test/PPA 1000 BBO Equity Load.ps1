@@ -1,5 +1,5 @@
 # Load & configure deltaTest.
-Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseTestFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
+Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseDataFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
 
 # Copy test file to input directory.
 Copy-Item -Path "equity_namr.dif.20180917" -Destination $Global:EnvBboSecFileInDir
