@@ -58,9 +58,9 @@ First thing is to get deltaTest installed. If it is already in use in your organ
 
 1. Clone this repository into a shared directory that is accessible to your whole development team.
 1. Copy script *config_template.ps1* to *config.ps1* and configure it with relevant environment settings.
-1. Run the scripts in the [*DB*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/DB) directory in the order indicated, in every DB environment where you will be performing tests. If the object names don't work with your DB object naming convention, you can change them as long as you propagate the changes through the code. Note that the *Dump_Data* stored procedure will be called by most of your test result scripts, so be sure to propagate any changes there as well!
-1. Copy the [*Test*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/Test) directory into an appropriate location in your version control system. Best guidance is that your tests should live right alongside your code, because they ARE code!
-1. From the [*Install*](https://github.com/EnterpriseTestFoundation/deltaTest/tree/master/Install) directory, run the +INSTALL shortcut, accepting all defaults.
+1. Run the scripts in the [*DB*](https://github.com/EnterpriseDataFoundation/deltaTest/tree/master/DB) directory in the order indicated, in every DB environment where you will be performing tests. If the object names don't work with your DB object naming convention, you can change them as long as you propagate the changes through the code. Note that the *Dump_Data* stored procedure will be called by most of your test result scripts, so be sure to propagate any changes there as well!
+1. Copy the [*Test*](https://github.com/EnterpriseDataFoundation/deltaTest/tree/master/Test) directory into an appropriate location in your version control system. Best guidance is that your tests should live right alongside your code, because they ARE code!
+1. From the [*Install*](https://github.com/EnterpriseDataFoundation/deltaTest/tree/master/Install) directory, run the +INSTALL shortcut, accepting all defaults.
 
 Now you are ready to run a test!
 

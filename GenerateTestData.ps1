@@ -1,5 +1,5 @@
 ﻿# Load & configure deltaTest.
-Invoke-Expression "$(Get-ItemPropertyValue -Path "HKCU:\Software\EnterpriseTestFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
+Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseDataFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
 
 $DbServer = Read-UserEntry -Label "Database Server" -Default $EnvMedmDbServer
 $DbName = Read-UserEntry -Label "Database Name" -Default $EnvMedmDbName

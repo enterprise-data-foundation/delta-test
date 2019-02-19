@@ -3,7 +3,7 @@
 )
 
 # Pull global variables from Windows Registry.
-$RegistryPath = "HKLM:\Software\EnterpriseTestFoundation\deltaTest"
+$RegistryPath = "HKLM:\Software\EnterpriseDataFoundation\deltaTest"
 Get-Item -Path $RegistryPath | Select-Object -ExpandProperty Property | ForEach-Object {
     $PropertyName = $_
     switch -Wildcard ($(Get-ItemPropertyValue -Path $RegistryPath -Name $PropertyName).GetType()) {
