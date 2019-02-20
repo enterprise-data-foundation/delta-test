@@ -199,17 +199,23 @@ function Import-CsvTable {
     
     $TableName = (Get-Item $CsvPath).BaseName
     $Csv = Import-Csv -Path $CsvPath
+
+    if ($Csv -eq $null) { return }
+
     $Columns = $Csv[0].psobject.Properties.Name 
     $ColumnList = "[" + ($Columns -join "], [") + "]"
 
     $Sql = ""
-    $Csv | foreach {
-        $Values = $_.psobject.Properties.Value
-        $ValueList = "'" + (($Values -replace "'", "''") -join "', '") + "'"
+    foreach ($Row in $Csv) {
+        [string[]] $Values = $()
+        foreach ($Value in $Row.psobject.Properties.Value) {
+            if ($Value.Length -eq 0) {$Values += "NULL"}
+            else { $Values += ("'" + ($Value -replace "'", "''") + "'") }
+        }
+        $ValueList = ($Values -join ", ")
 
         $Sql += "INSERT {0} ({1}) VALUES ({2});`n" -f $TableName, $ColumnList, $ValueList
     }
-
     Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -Query $Sql
 }
 
@@ -530,6 +536,8 @@ function Test-MedmComponent {
     }
 
     # Invoke result scripts.
+    $ResultSqlDir
+    $ResultSqlFiles
 	if ($ResultSqlFiles) {
 		Invoke-SqlScripts `
 			-DbServer $DbServer `
