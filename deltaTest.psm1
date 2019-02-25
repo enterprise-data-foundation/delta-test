@@ -318,13 +318,15 @@ function Invoke-SqlScripts {
                         "  Executing $($ScriptType) `"$($SqlFile)`"" | Write-Host
 
                         if ($OutputPath) { 
-                            "========== $($SqlFile) ==========" | Out-File -FilePath $OutputPath -Append 
+                            "========== $($SqlFile) ==========" | Out-File -FilePath $OutputPath -Append
+                            $Output = Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -InputFile $SqlPath | Select * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors 
 					        if ($OutputTable) {
-						        Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -InputFile $SqlPath | Format-Table -Property * -AutoSize | Out-String -Stream -Width 32768 | Out-File -FilePath $OutputPath -Append
+						        $FormattedOutput = $Output | Format-Table -Property * -AutoSize
 					        }
 					        else {
-						        Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -InputFile $SqlPath | Format-List -Property * | Out-String -Stream -Width 32768 | Out-File -FilePath $OutputPath -Append
+						        $FormattedOutput = $Output | Format-List -Property *
 					        }
+                            $FormattedOutput | Out-String -Stream -Width 32768 | Out-File -FilePath $OutputPath -Append
                         }
                         else { 
                             Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -InputFile $SqlPath 
