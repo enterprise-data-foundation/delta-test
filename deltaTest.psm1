@@ -538,8 +538,6 @@ function Test-MedmComponent {
     }
 
     # Invoke result scripts.
-    $ResultSqlDir
-    $ResultSqlFiles
 	if ($ResultSqlFiles) {
 		Invoke-SqlScripts `
 			-DbServer $DbServer `
