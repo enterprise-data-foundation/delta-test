@@ -284,7 +284,7 @@ function Invoke-SqlScripts {
     Param(
         [string]$DbServer = $Global:EnvMedmDbServer,
 
-        [string]$DbName = $Global:EnvMedmDbServer,
+        [string]$DbName = $Global:EnvMedmDbName,
 
         [string]$SqlDir = $null,
 
