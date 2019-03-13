@@ -219,6 +219,45 @@ function Import-CsvTable {
     Invoke-Sqlcmd -ServerInstance $DbServer -Database $DbName -Query $Sql
 }
 
+function Invoke-deltaTest {
+        [CmdletBinding(SupportsShouldProcess = $True)]
+	    Param(
+        [Parameter(Mandatory = $True)]
+        [string]$TestPath,
+
+        [string]$NoInput,
+
+        [string]$ActiveEnvironment,
+
+        [string]$MedmProcessAgentPath
+    )
+
+    Push-Location
+	
+    $GlobalNoInput = $Global:NoInput
+    if ($NoInput) { $Global:NoInput = $(If ($NoInput -eq "True") { $True } Else { $False }) }
+
+    $GlobalActiveEnvironment = $Global:ActiveEnvironment
+    if ($ActiveEnvironment) { $Global:ActiveEnvironment = $ActiveEnvironment }
+
+    $GlobalMedmProcessAgentPath = $Global:MedmProcessAgentPath 
+    if ($MedmProcessAgentPath) { $Global:MedmProcessAgentPath = $MedmProcessAgentPath }
+
+    "Running " + $TestPath | Out-Host
+    $parent = Split-Path -Path $TestPath -Parent
+    $leaf = Split-Path -Path $TestPath -Leaf
+    Set-Location -Path $parent
+    $result = (& ".\$($leaf)") 
+
+    $Global:NoInput = $GlobalNoInput
+    $Global:ActiveEnvironment = $GlobalActiveEnvironment
+    $Global:MedmProcessAgentPath = $GlobalMedmProcessAgentPath 
+
+    Pop-Location
+
+    return $result
+}
+
 function Invoke-MedmComponent {
         [CmdletBinding(SupportsShouldProcess = $True)]
 	    Param(
@@ -460,7 +499,7 @@ function Show-Execution {
 
     If ($Result) { $Result | Out-Host }
 
-    If ($NoInput) { return }
+    If ($Global:NoInput) { return }
 
     [void](Read-Host "Press Enter to continue") 
 }
