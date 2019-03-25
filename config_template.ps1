@@ -30,7 +30,7 @@ If (!$Global:TextDiffParams) { $Global:TextDiffParams = @("/e", "/s", "/u", "/wl
 # Default script type for results reporting.
 If (!$Global:SqlScriptType) { $Global:SqlScriptType = "Sql Script" }
 
-# Default directory for report files..
+# Default directory for report files.. 
 If (!$Global:ReportFolder) { $Global:ReportFolder = "C:\deltaTest\Results" }
 
 # Execute tests with user input by default.
