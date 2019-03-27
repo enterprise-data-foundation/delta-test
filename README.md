@@ -109,7 +109,7 @@ Install-Module -Name SqlServer -Force
 
 By default, **deltaTest** is expecting Markit EDM (MEDM) v17.1.132.0 to be installed in the default installation directory on your local machine. If you are running a different version of MEDM, or from a different directory, indicate the Process Agent Path when you run the **+INSTALL** script:
 
-![MedmProcessAgentPath](Doc/MedmProcessAgentPath.PNG)
+![MedmProcessAgentPath](https://enterprise-data.org/wp-content/uploads/2019/03/MedmProcessAgentPath.png)
 
 [Back to Top](#welcome-to-deltatest)
 
@@ -127,7 +127,7 @@ Environment-specific tokens and values are managed centrally in script *config.p
 
 To switch to a different testing environment, run the **+INSTALL** script and designate a different Active Environment token, like this:
 
-![ActiveEnvironment](Doc/ActiveEnvironment.PNG)
+![ActiveEnvironment](https://enterprise-data.org/wp-content/uploads/2019/03/ActiveEnvironment.png)
 
 [Back to Top](#welcome-to-deltatest)
 
