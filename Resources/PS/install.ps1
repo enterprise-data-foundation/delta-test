@@ -148,7 +148,7 @@ function Test-Installed( $program ) {
     return $x86 -or $x64;
 }
 
-If (!$Global:NoInput) {
+If (!$NoInput) {
     Write-Host "`nChecking WinMerge installation..."
 
     If (Test-Installed "WinMerge") {
