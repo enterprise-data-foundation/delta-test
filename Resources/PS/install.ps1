@@ -29,10 +29,10 @@ else
     $newProcess = new-object System.Diagnostics.ProcessStartInfo "PowerShell";
     $newProcess.Arguments = $myInvocation.MyCommand.Definition;
 
-    if ($LocalDir) { $newProcess.Arguments += " -LocalDir `$$LocalDir" }
+    if ($LocalDir) { $newProcess.Arguments += " -LocalDir '$LocalDir'" }
     if ($NoInputStr) { $newProcess.Arguments += " -NoInputStr `$$NoInputStr" }
-    if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment $ActiveEnvironment" } 
-    if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath $MedmProcessAgentPath" } 
+    if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment '$ActiveEnvironment'" } 
+    if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath '$MedmProcessAgentPath'" } 
 
     $newProcess.Verb = "runas";
     [System.Diagnostics.Process]::Start($newProcess);
@@ -43,13 +43,13 @@ else
 
 # Validate & hydrate params.
 $ModuleDir = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent 
-$SharedConfig = Import-LocalizedData -BaseDirectory $ModuleDir -FileName "shared_config.psd1"
+$SharedConfig = Import-LocalizedData -BaseDirectory $ModuleDir -FileName 'shared_config.psd1'
 
-if (!$NoInputStr) { $NoInput = $SharedConfig.NoInput }
-else { $NoInput = $("`$$($NoInputStr)") }
+if (!$NoInputStr) { $NoInput = $SharedConfig.NoInput}
+else { $NoInput = $("`$$NoInputStr") }
 
-if ($ActiveEnvironment -eq $null) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
-if ($MedmProcessAgentPath -eq $null) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
+if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
+if (!$MedmProcessAgentPath) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
 
 # BEGIN
 Write-Host "`nThank you for installing deltaTest v2.0.0!"
@@ -109,41 +109,41 @@ $LocalConfigData = @"
 
 @{
     # Points to the shared deltaTest repo.
-    ModuleDir = $($ModuleDir)
+    ModuleDir = $ModuleDir
 
 	# If true, tests will execute without user input or diff visualization.
-	NoInput = `$$($NoInput)
+	NoInput = `$$NoInput
 	
 	# Tests will be run against this environment. Must be specified in $($ModuleDir)\shared_config.psd1
-	ActiveEnvironment = "$($ActiveEnvironment)"
+	ActiveEnvironment = "$ActiveEnvironment"
 	
 	# Path to Markit EDM command line executable.
-	MedmProcessAgentPath = "$($MedmProcessAgentPath)"
+	MedmProcessAgentPath = "$MedmProcessAgentPath"
 	
 	# Path to text differencing engine executable.
-	TextDiffExe = "$($SharedConfig.TextDiffExe)"
+	TextDiffExe = "$SharedConfig.TextDiffExe"
 	
 	# Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} 
     # will be replaced by the appropriate paths at run time.
 	TextDiffParams = @("$($SharedConfig.TextDiffParams -Join """, """)")
 }
-"@ | Out-File -FilePath "$($LocalDir)\local_config.psd1"
+"@ | Out-File -FilePath "$LocalDir\local_config.psd1"
 
 Write-Host "Done!"
 
 # Create environment variable.
 Write-Host "`nCreating %deltaTest% environment variable..." -NoNewline
-[Environment]::SetEnvironmentVariable("deltaTest", $LocalDir, "Machine")
+[Environment]::SetEnvironmentVariable('deltaTest', $LocalDir, 'Machine')
 Write-Host "Done!"
 
 # Check WinMerge installation.
 function Test-Installed( $program ) {
     
-    $x86 = ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") |
-        Where-Object { $_.GetValue( "DisplayName" ) -like "*$program*" } ).Length -gt 0;
+    $x86 = ((Get-ChildItem 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall') |
+        Where-Object { $_.GetValue('DisplayName') -like "*$program*" } ).Length -gt 0;
 
     $x64 = ((Get-ChildItem "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall") |
-        Where-Object { $_.GetValue( "DisplayName" ) -like "*$program*" } ).Length -gt 0;
+        Where-Object { $_.GetValue('DisplayName') -like "*$program*" } ).Length -gt 0;
 
     return $x86 -or $x64;
 }
@@ -151,15 +151,15 @@ function Test-Installed( $program ) {
 If (!$NoInput) {
     Write-Host "`nChecking WinMerge installation..."
 
-    If (Test-Installed "WinMerge") {
-        Write-Host "WinMerge is already installed!"
+    If (Test-Installed 'WinMerge') {
+        Write-Host 'WinMerge is already installed!'
     }
     Else {
-        Write-Host "Installing WinMerge... " -NoNewline 
+        Write-Host 'Installing WinMerge... ' -NoNewline 
         $WinMergeExePath = "$($PSScriptRoot | Split-Path -Parent)\WinMerge-2.14.0-Setup.exe"
-        $WinMergeExeParams = "/SILENT" # http://www.jrsoftware.org/ishelp/index.php?topic=setupcmdline
+        $WinMergeExeParams = '/SILENT' # http://www.jrsoftware.org/ishelp/index.php?topic=setupcmdline
         & $WinMergeExePath $WinMergeExeParams | Write-Host
-        Write-Host "Done!"
+        Write-Host 'Done!'
     }
 }
 
