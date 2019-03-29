@@ -1,5 +1,5 @@
 # deltaTest files
-config.ps1
+shared_config.ps1
 Result.txt
 *.log
 
