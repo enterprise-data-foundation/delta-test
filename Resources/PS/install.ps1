@@ -1,5 +1,5 @@
 ﻿param(
-    [string]$LocalDir = "C:\Program Files\deltaTest",
+    [string]$LocalDir = "C:\deltaTest",
     [string]$NoInputStr,
     [string]$ActiveEnvironment,
     [string]$MedmProcessAgentPath
