@@ -109,7 +109,7 @@ $LocalConfigData = @"
 
 @{
     # Points to the shared deltaTest repo.
-    ModuleDir = $ModuleDir
+    ModuleDir = "$ModuleDir"
 
 	# If true, tests will execute without user input or diff visualization.
 	NoInput = `$$NoInput
