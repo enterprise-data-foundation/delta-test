@@ -6,15 +6,6 @@ Add-Type -TypeDefinition @"
    }
 "@
 
-Push-Location
-
-if (-not (Get-Command Invoke-Sqlcmd -ErrorAction SilentlyContinue)) {
-	Write-Host 'Invoke-Sqlcmd not loaded: loading SqlServer to fix'
-	Push-Location # save the current location
-	$dummy = Install-Module -Name SqlServer -ErrorAction Stop # Importing this module forces the location to a SqlServer prompt
-	Pop-Location # get back to the current location, counteracting the side effect of importing SqlServer	
-}
-
 $ScriptName = $(Get-PSCallStack | Select-Object -Property * | Where-Object {$_.ScriptName -ne $null})[-1].ScriptName
 $Parent = Split-Path -Path $ScriptName -Parent
 $BaseName = (Get-Item $ScriptName).BaseName
@@ -611,5 +602,3 @@ function Test-MedmComponent {
 
 	return $result
 }
-
-Pop-Location
