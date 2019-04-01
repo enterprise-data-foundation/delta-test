@@ -131,6 +131,9 @@ $LocalConfigData = @"
 
 Write-Host "Done!"
 
+# Copy init script.
+Copy-Item -Path 'init.ps1' -Destination "$LocalDir\init.ps1"
+
 # Create environment variable.
 Write-Host "`nCreating %deltaTest% environment variable..." -NoNewline
 [Environment]::SetEnvironmentVariable('deltaTest', $LocalDir, 'Machine')
