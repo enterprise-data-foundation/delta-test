@@ -111,21 +111,21 @@ $LocalConfigData = @"
     # Points to the shared deltaTest repo.
     ModuleDir = "$ModuleDir"
 
-	# If true, tests will execute without user input or diff visualization.
-	NoInput = `$$NoInput
+    # If true, tests will execute without user input or diff visualization.
+    NoInput = `$$NoInput
 	
-	# Tests will be run against this environment. Must be specified in $($ModuleDir)\shared_config.psd1
-	ActiveEnvironment = "$ActiveEnvironment"
+    # Tests will be run against this environment. Must be specified in $($ModuleDir)\shared_config.psd1
+    ActiveEnvironment = "$ActiveEnvironment"
 	
-	# Path to Markit EDM command line executable.
-	MedmProcessAgentPath = "$MedmProcessAgentPath"
+    # Path to Markit EDM command line executable.
+    MedmProcessAgentPath = "$MedmProcessAgentPath" 
 	
-	# Path to text differencing engine executable.
-	TextDiffExe = "$SharedConfig.TextDiffExe"
+    # Path to text differencing engine executable.
+    TextDiffExe = "$SharedConfig.TextDiffExe"
 	
-	# Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} 
+    # Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} 
     # will be replaced by the appropriate paths at run time.
-	TextDiffParams = @("$($SharedConfig.TextDiffParams -Join """, """)")
+    TextDiffParams = @("$($SharedConfig.TextDiffParams -Join """, """)")
 }
 "@ | Out-File -FilePath "$LocalDir\local_config.psd1"
 
