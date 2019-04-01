@@ -6,20 +6,25 @@ Add-Type -TypeDefinition @"
    }
 "@
 
-$ScriptName = $(Get-PSCallStack | Select-Object -Property * | Where-Object {$_.ScriptName -ne $null})[-1].ScriptName
-$Parent = Split-Path -Path $ScriptName -Parent
-$BaseName = (Get-Item $ScriptName).BaseName
-Start-Transcript -Path "$($Parent)\$($BaseName).log" -Append -IncludeInvocationHeader
+function ConvertTo-Bool {
+    [CmdletBinding(SupportsShouldProcess = $True)]
+	Param(
+		[string][Parameter(Mandatory = $True)] $Input
+	) 
+}
 
 function Confirm-File {
     [CmdletBinding(SupportsShouldProcess = $True)]
 	Param(
 		[string][Parameter(Mandatory = $True)] $FilePath,
 		[string][Parameter(Mandatory = $True)] $CertifiedFilePath,
-		[string]$TextDiffExe = $Global:TextDiffExe,
-		[string[]]$TextDiffParams = $Global:TextDiffParams,
-		[string]$TestName
+		[string]$TestName,
+        [string]$NoInput = $Global:deltaTestConfig.NoInput,
+		[string]$TextDiffExe = $Global:deltaTestConfig.TextDiffExe,
+		[string[]]$TextDiffParams = $Global:deltaTestConfig.TextDiffParams
 	)
+
+    
 
     # Init result object.
 	$result = @{
@@ -30,7 +35,7 @@ function Confirm-File {
     # If result file doesn't exist...
     if (-not(Test-Path $FilePath)) {
 		$result.Status = "FAILED"
-        $result.Reason = "Result file `"$($FilePath)`" does not exist."
+        $result.Reason = "Result file `"$FilePath`" does not exist."
     }
 
     # ... else if certified result file doesn't exist...
