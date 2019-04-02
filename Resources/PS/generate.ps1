@@ -1,8 +1,42 @@
-﻿# Load & configure deltaTest.
-Invoke-Expression "$(Get-ItemPropertyValue -Path "HKLM:\Software\EnterpriseDataFoundation\deltaTest" -Name "ModuleDir")\config.ps1"
+﻿####################################################################
+#
+# DELTATEST v2.0.0
+#
+# Test Data Generator
+#
+# This script queries a designated table and generates a CSV of
+# sample data according to the prompts. Unless overridden, the
+# script uses the database connection info for the currently active
+# environment.
+#
+# To run this script manually, just double-click on the +GENERATE 
+# shortcut in the shared deltaTest repository!
+# 
+####################################################################
+#
+# Copyright 2016-2019 by the following contributors:
+#
+#   Continuus Technologies, LLC
+#   Enterprise Data Foundation, Inc.
+#   HexisData, Inc.
+#   HotQuant, Inc. 
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+####################################################################
 
-$DbServer = Read-UserEntry -Label "Database Server" -Default $EnvMedmDbServer
-$DbName = Read-UserEntry -Label "Database Name" -Default $EnvMedmDbName
+# Initialize deltaTest.
+Invoke-Expression "$env:deltaTest\init.ps1"
+
+$DbServer = Read-UserEntry -Label "Database Server" -Default $(Get-ActiveEnvironment).MedmDbServer
+$DbName = Read-UserEntry -Label "Database Name" -Default $(Get-ActiveEnvironment).MedmDbName
 $TableSchema = Read-UserEntry -Label "Table Schema" -Default "dbo"
 $TableName = Read-UserEntry -Label "Table Name"
 $ColNamePattern = Read-UserEntry -Label "Column Name Exclusion Pattern" -Default "^CADIS_SYSTEM_" -Pattern ".*"

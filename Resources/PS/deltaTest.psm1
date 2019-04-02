@@ -1,3 +1,36 @@
+####################################################################
+#
+# DELTATEST v2.0.0
+#
+# PowerShell Module
+#
+# If deltaTest is properly installed in shared & local environments,
+# run the following command to initialize settings and load the
+# module. This should be the first line of every test and batch
+# script:
+#
+#   Invoke-Expression "$env:deltaTest\init.ps1"
+# 
+####################################################################
+#
+# Copyright 2016-2019 by the following contributors:
+#
+#   Continuus Technologies, LLC
+#   Enterprise Data Foundation, Inc.
+#   HexisData, Inc.
+#   HotQuant, Inc. 
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+####################################################################
+
 Add-Type -TypeDefinition @"
    public enum PatternAction
    {
@@ -6,25 +39,19 @@ Add-Type -TypeDefinition @"
    }
 "@
 
-function ConvertTo-Bool {
-    [CmdletBinding(SupportsShouldProcess = $True)]
-	Param(
-		[string][Parameter(Mandatory = $True)] $Input
-	) 
-}
-
 function Confirm-File {
     [CmdletBinding(SupportsShouldProcess = $True)]
 	Param(
 		[string][Parameter(Mandatory = $True)] $FilePath,
 		[string][Parameter(Mandatory = $True)] $CertifiedFilePath,
 		[string]$TestName,
-        [string]$NoInput = $Global:deltaTestConfig.NoInput,
+        [bool]$NoInput = $Global:deltaTestConfig.NoInput,
 		[string]$TextDiffExe = $Global:deltaTestConfig.TextDiffExe,
 		[string[]]$TextDiffParams = $Global:deltaTestConfig.TextDiffParams
-	)
+	)  
 
-    
+    # Convert $NoInput to bool.
+    $NoInput = [System.Convert]::ToBoolean($NoInput)
 
     # Init result object.
 	$result = @{
@@ -75,9 +102,9 @@ function Confirm-File {
 
 function Export-CsvTestData {
 	Param(
-        [string]$DbServer = $Global:EnvMedmDbServer,
+        [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
         
-        [string]$DbName = $Global:EnvMedmDbName,
+        [string]$DbName = $(Get-ActiveEnvironment).MedmDbName,
         
         [string]$TableSchema = "dbo",
         
@@ -153,6 +180,10 @@ function Export-CsvTestData {
     $Rows | Export-Csv -Path $CsvPath -Encoding Unicode -NoTypeInformation
 }
 
+function Get-ActiveEnvironment {
+    return $deltaTestConfig.Environments.$($deltaTestConfig.ActiveEnvironment)
+}
+
 # Returns a list of files under a path that optionally match Regex patterns for inclusion or exclusion.
 function Get-Files {
     Param(
@@ -185,9 +216,9 @@ function Import-CsvTable {
     [CmdletBinding(SupportsShouldProcess = $True)]
 
     Param(
-        [string]$DbServer = $Global:EnvMedmDbServer,
-
-        [string]$DbName = $Global:EnvMedmDbName,
+        [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
+        
+        [string]$DbName = $(Get-ActiveEnvironment).MedmDbName,
 
         [Parameter(Mandatory = $True)]
         [string]$CsvPath
@@ -216,12 +247,11 @@ function Import-CsvTable {
 }
 
 function Invoke-deltaTest {
-        [CmdletBinding(SupportsShouldProcess = $True)]
-	    Param(
+	Param(
         [Parameter(Mandatory = $True)]
         [string]$TestPath,
 
-        [string]$NoInput,
+        [bool]$NoInput,
 
         [string]$ActiveEnvironment,
 
@@ -230,14 +260,11 @@ function Invoke-deltaTest {
 
     Push-Location
 	
-    $GlobalNoInput = $Global:NoInput
-    if ($NoInput) { $Global:NoInput = $(If ($NoInput -eq "True") { $True } Else { $False }) }
+    $TempConfig = $Global:deltaTestConfig
 
-    $GlobalActiveEnvironment = $Global:ActiveEnvironment
-    if ($ActiveEnvironment) { $Global:ActiveEnvironment = $ActiveEnvironment }
-
-    $GlobalMedmProcessAgentPath = $Global:MedmProcessAgentPath 
-    if ($MedmProcessAgentPath) { $Global:MedmProcessAgentPath = $MedmProcessAgentPath }
+    if ($NoInput -ne $null) { $Global:deltaTestConfig.NoInput = [System.Convert]::ToBoolean($NoInput) }
+    if ($ActiveEnvironment) { $Global:deltaTestConfig.ActiveEnvironment = $ActiveEnvironment }
+    if ($MedmProcessAgentPath) { $Global:deltaTestConfig.MedmProcessAgentPath = $MedmProcessAgentPath }
 
     "Running " + $TestPath | Out-Host
     $parent = Split-Path -Path $TestPath -Parent
@@ -245,9 +272,7 @@ function Invoke-deltaTest {
     Set-Location -Path $parent
     $result = (& ".\$($leaf)") 
 
-    $Global:NoInput = $GlobalNoInput
-    $Global:ActiveEnvironment = $GlobalActiveEnvironment
-    $Global:MedmProcessAgentPath = $GlobalMedmProcessAgentPath 
+    $Global:deltaTestConfig = $TempConfig
 
     Pop-Location
 
@@ -255,17 +280,17 @@ function Invoke-deltaTest {
 }
 
 function Invoke-MedmComponent {
-        [CmdletBinding(SupportsShouldProcess = $True)]
-	    Param(
-        [string]$MedmProcessAgentPath = $Global:MedmProcessAgentPath,
+    [CmdletBinding(SupportsShouldProcess = $True)]
+	Param(
+        [string]$MedmProcessAgentPath = $Global:deltaTestConfig.MedmProcessAgentPath,
+        
+        [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
+        
+        [string]$DbName = $(Get-ActiveEnvironment).MedmDbName,
 
-        [string]$DbServer = $Global:EnvMedmDbServer,
+        [string]$SetupSqlDir,
 
-        [string]$DbName = $Global:EnvMedmDbName,
-
-        [string]$SetupSqlDir = $null,
-
-        [string]$SetupSqlFiles = $null,
+        [string]$SetupSqlFiles,
 
         [Parameter(Mandatory = $True)]
         [string]$ComponentName,
@@ -287,8 +312,7 @@ function Invoke-MedmComponent {
             -DbServer $DbServer `
             -DbName $DbName `
             -SqlDir $SetupSqlDir `
-            -SqlFiles $SetupSqlFiles `
-            -ScriptType "Setup Script"
+            -SqlFiles $SetupSqlFiles
     }
 
 	# Compose MEDM component invocation.
@@ -307,8 +331,7 @@ function Invoke-MedmComponent {
             -DbServer $DbServer `
             -DbName $DbName `
             -SqlDir $CleanupSqlDir `
-            -SqlFiles $CleanupSqlFiles `
-            -ScriptType "Cleanup Script"
+            -SqlFiles $CleanupSqlFiles
     }
 
 }
@@ -317,9 +340,11 @@ function Invoke-SqlScripts {
     [CmdletBinding(SupportsShouldProcess = $True)]
 
     Param(
-        [string]$DbServer = $Global:EnvMedmDbServer,
-
-        [string]$DbName = $Global:EnvMedmDbName,
+        [Parameter(Mandatory = $True)]
+        [string]$DbServer,
+        
+        [Parameter(Mandatory = $True)]
+        [string]$DbName,
 
         [string]$SqlDir = $null,
 
@@ -327,22 +352,20 @@ function Invoke-SqlScripts {
 
         [string]$OutputPath = $null,
 
-		[switch]$OutputTable,
- 
-        [string]$ScriptType = $Global:SqlScriptType
+		[switch]$OutputTable
    )
     # Default $SqlDir to current location.
     if (-Not $SqlDir) {$SqlDir = Get-Location}
     # Iterate through $Sql list & execute each in turn.
     if ($SqlFiles) {
-		"`nBeginning $($ScriptType) execution against DB $($DbServer)\$($DbName)`n" | Write-Host
+		"`nBeginning script execution against DB $($DbServer)\$($DbName)`n" | Write-Host
         Push-Location
         if ($OutputPath) { "" | Out-File -FilePath $OutputPath }
         $SqlFiles.Split(",") | ForEach {
             Get-Files -Path $SqlDir -Include $_.Trim() | ForEach {
                 $SqlPath = $_
                 $SqlFile = Split-Path -Path $SqlPath -Leaf
-                if ($PSCmdlet.ShouldProcess("$($ScriptType) $($SqlPath)")) {
+                if ($PSCmdlet.ShouldProcess("$($SqlPath)")) {
                     $Extension = (Get-Item $SqlPath).Extension
                     if ($Extension.ToLower() -eq ".csv") {
                         "  Importing CSV File `"$($SqlFile)`"" | Write-Host
@@ -350,7 +373,7 @@ function Invoke-SqlScripts {
                         Import-CsvTable -DbServer $DbServer -DbName $DbName -CsvPath $SqlPath
                     }
                     else {
-                        "  Executing $($ScriptType) `"$($SqlFile)`"" | Write-Host
+                        "  Executing SQL script `"$SqlFile`"" | Write-Host
 
                         if ($OutputPath) { 
                             "========== $($SqlFile) ==========" | Out-File -FilePath $OutputPath -Append
@@ -371,17 +394,21 @@ function Invoke-SqlScripts {
             }
         }
         Pop-Location
-        "`nCompleted $($ScriptType) execution against DB $($DbServer)\$($DbName)" | Write-Host
+        "`nCompleted script execution against DB $($DbServer)\$($DbName)" | Write-Host
     }
 }
 
 function Publish-Results {
 	Param(
-		[string]$ReportFolder = $Global:ReportFolder,
+		[Parameter(Mandatory = $True)]
+		[string]$ReportFolder,
+
 		[Parameter(Mandatory = $True)]
 		[string]$TestSuiteName,
+
 		[Parameter(Mandatory = $True)]
 		[Object[]]$Results,
+
 		[ValidateSet("JUnit")]
 		[string]$ReportFormat = "JUnit"
 	)
@@ -495,7 +522,7 @@ function Show-Execution {
 
     If ($Result) { $Result | Out-Host }
 
-    If ($Global:NoInput) { return }
+    If ($Global:deltaTestConfig.NoInput) { return }
 
     [void](Read-Host "Press Enter to continue") 
 }
@@ -515,15 +542,15 @@ function Test-MedmComponent {
     [CmdletBinding(SupportsShouldProcess = $True)]
 
     Param(
-        [string]$MedmProcessAgentPath = $Global:MedmProcessAgentPath,
+        [string]$MedmProcessAgentPath = $Global:deltaTestConfig.MedmProcessAgentPath,
+        
+        [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
+        
+        [string]$DbName = $(Get-ActiveEnvironment).MedmDbName,
 
-		[string]$DbServer = $Global:EnvMedmDbServer,
+		[string]$SetupSqlDir,
 
-		[string]$DbName = $Global:EnvMedmDbName,
-
-		[string]$SetupSqlDir = $null,
-
-		[string]$SetupSqlFiles = $null,
+		[string]$SetupSqlFiles,
 
 		[Parameter(Mandatory = $True)]
         [string]$ComponentName,
@@ -532,24 +559,24 @@ function Test-MedmComponent {
 		[ValidateSet("DataPorter", "DataInspector", "DataMatcherProcess", "DataConstructor", "Solution")]
 		[string]$ComponentType,
 
-		[string]$ConfigurableParams = $null,
+		[string]$ConfigurableParams,
 
-		[string]$ResultSqlDir = $null,
+		[string]$ResultSqlDir,
 
-        [string]$ResultSqlFiles = $null,
+        [string]$ResultSqlFiles,
 
-		[string]$CleanupSqlDir = $null,
+		[string]$CleanupSqlDir,
 
-		[string]$CleanupSqlFiles = $null,
+		[string]$CleanupSqlFiles,
 
 		[Parameter(Mandatory = $True)]
         [string]$TestResultPath,
 
-		[string]$CertifiedResultPath = $null,
+		[string]$CertifiedResultPath,
 
-		[string]$TextDiffExe = $Global:TextDiffExe,
+		[string]$TextDiffExe = $Global:deltaTestConfig.TextDiffExe,
 
-		[string[]]$TextDiffParams = $Global:TextDiffParams,
+		[string[]]$TextDiffParams = $Global:deltaTestConfig.TextDiffParams,
 
 		[switch]$OutputTable,
 
@@ -579,7 +606,6 @@ function Test-MedmComponent {
 			-DbName $DbName `
 			-SqlDir $ResultSqlDir `
 			-SqlFiles $ResultSqlFiles `
-			-ScriptType "Result Query" `
 			-OutputPath $TestResultPath `
 			-OutputTable:$OutputTable
 	}
@@ -591,8 +617,7 @@ function Test-MedmComponent {
                 -DbServer $DbServer `
                 -DbName $DbName `
                 -SqlDir $CleanupSqlDir `
-                -SqlFiles $CleanupSqlFiles `
-                -ScriptType "Cleanup Script"
+                -SqlFiles $CleanupSqlFiles 
         }
     }
 

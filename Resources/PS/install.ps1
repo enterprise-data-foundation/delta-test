@@ -1,6 +1,41 @@
-﻿param(
+﻿####################################################################
+#
+# DELTATEST v2.0.0
+#
+# Installation Script
+#
+# To install deltaTest manually, navigate to the shared deltaTest
+# repository and double-click the +INSTALL shortcut. This will place
+# a local_config.psd1 file, which you can override to change shared
+# configs in the local context.
+#
+# If you run this script directly using the parameters defined 
+# below, the same process will occur, but the config files will be
+# placed and shared configs overridden as specified.
+# 
+####################################################################
+#
+# Copyright 2016-2019 by the following contributors:
+#
+#   Continuus Technologies, LLC
+#   Enterprise Data Foundation, Inc.
+#   HexisData, Inc.
+#   HotQuant, Inc. 
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+####################################################################
+
+param(
     [string]$LocalDir = "C:\deltaTest",
-    [string]$NoInputStr,
+    [bool]$NoInput,
     [string]$ActiveEnvironment,
     [string]$MedmProcessAgentPath
 )
@@ -30,7 +65,7 @@ else
     $newProcess.Arguments = $myInvocation.MyCommand.Definition;
 
     if ($LocalDir) { $newProcess.Arguments += " -LocalDir '$LocalDir'" }
-    if ($NoInputStr) { $newProcess.Arguments += " -NoInputStr `$$NoInputStr" }
+    if ($NoInput -ne $null) { $newProcess.Arguments += " -NoInput `$$NoInput" }
     if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment '$ActiveEnvironment'" } 
     if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath '$MedmProcessAgentPath'" } 
 
@@ -45,9 +80,7 @@ else
 $ModuleDir = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent 
 $SharedConfig = Import-LocalizedData -BaseDirectory $ModuleDir -FileName 'shared_config.psd1'
 
-if (!$NoInputStr) { $NoInput = $SharedConfig.NoInput}
-else { $NoInput = $("`$$NoInputStr") }
-
+if ($NoInput -eq $null) { $NoInput = $SharedConfig.NoInput }
 if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
 if (!$MedmProcessAgentPath) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
 
@@ -101,11 +134,37 @@ Write-Host "`nWriting local config file..." -NoNewline
 if (!(Test-Path $LocalDir -PathType Container)) { New-Item $LocalDir -ItemType "directory" }
 
 $LocalConfigData = @"
+####################################################################
 #
-# DELTATEST 2.0.0
+# DELTATEST v2.0.0
 #
-# Local configuration file. These override shared default settings in $($ModuleDir)\shared_config.psd1
+# Local Config File
 #
+# The settings below override the default settings in your shared 
+# deltaTest repository at $ModuleDir
+#
+# This file will be overwritten if the installer is run against the
+# same location.
+# 
+####################################################################
+#
+# Copyright 2016-2019 by the following contributors:
+#
+#   Continuus Technologies, LLC
+#   Enterprise Data Foundation, Inc.
+#   HexisData, Inc.
+#   HotQuant, Inc. 
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 2 as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+####################################################################
 
 @{
     # Points to the shared deltaTest repo.
@@ -137,9 +196,13 @@ Write-Host "Done!"
 # Copy init script.
 Copy-Item -Path "$ModuleDir\Resources\PS\init.ps1" -Destination "$LocalDir\init.ps1"
 
-# Create environment variable.
+# Create environment variables.
 Write-Host "`nCreating %deltaTest% environment variable..." -NoNewline
 [Environment]::SetEnvironmentVariable('deltaTest', $LocalDir, 'Machine')
+Write-Host "Done!"
+
+Write-Host "Creating %deltaTestShared% environment variable..." -NoNewline
+[Environment]::SetEnvironmentVariable('deltaTestShared', $ModuleDir, 'Machine')
 Write-Host "Done!"
 
 # Check WinMerge installation.
@@ -168,6 +231,9 @@ If (!$NoInput) {
         Write-Host 'Done!'
     }
 }
+
+# Clear config variable so next init reloads it.
+$Global:deltaTestConfig = $null
 
 # END
 Write-Host "`nLocal deltaTest installation complete!"
