@@ -35,7 +35,7 @@
 
 param(
     [string]$LocalDir = "C:\deltaTest",
-    [bool]$NoInput,
+    [string]$NoInput,
     [string]$ActiveEnvironment,
     [string]$MedmProcessAgentPath
 )
@@ -65,7 +65,7 @@ else
     $newProcess.Arguments = $myInvocation.MyCommand.Definition;
 
     if ($LocalDir) { $newProcess.Arguments += " -LocalDir '$LocalDir'" }
-    if ($NoInput -ne $null) { $newProcess.Arguments += " -NoInput `$$NoInput" }
+    if ($NoInput) { $newProcess.Arguments += " -NoInput `$$NoInput" }
     if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment '$ActiveEnvironment'" } 
     if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath '$MedmProcessAgentPath'" } 
 
@@ -76,16 +76,24 @@ else
     exit
 }
 
-# Validate & hydrate params.
-$ModuleDir = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent 
-$SharedConfig = Import-LocalizedData -BaseDirectory $ModuleDir -FileName 'shared_config.psd1'
-
-if ($NoInput -eq $null) { $NoInput = $SharedConfig.NoInput }
-if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
-if (!$MedmProcessAgentPath) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
-
 # BEGIN
 Write-Host "`nThank you for installing deltaTest v2.0.0!"
+
+# Create environment variables.
+Write-Host "`nCreating %deltaTest% environment variable..." -NoNewline
+[Environment]::SetEnvironmentVariable('deltaTest', $LocalDir, 'Machine')
+Write-Host "Done!"
+
+Write-Host "Creating %deltaTestShared% environment variable..." -NoNewline
+[Environment]::SetEnvironmentVariable('deltaTestShared', $($PSScriptRoot | Split-Path -Parent | Split-Path -Parent), 'Machine')
+Write-Host "Done!"
+
+# Validate & hydrate params.
+$SharedConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShared -FileName 'shared_config.psd1'
+
+if (!$NoInput) { $NoInput = $SharedConfig.NoInput }
+if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
+if (!$MedmProcessAgentPath) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
 
 # Check PS Version
 Write-Host "`nChecking PowerShell version..."
@@ -127,84 +135,6 @@ Else {
     Write-Host "Done!"
 }
 
-
-# Write local config file. 
-Write-Host "`nWriting local config file..." -NoNewline
-
-if (!(Test-Path $LocalDir -PathType Container)) { New-Item $LocalDir -ItemType "directory" }
-
-$LocalConfigData = @"
-####################################################################
-#
-# DELTATEST v2.0.0
-#
-# Local Config File
-#
-# The settings below override the default settings in your shared 
-# deltaTest repository at $ModuleDir
-#
-# This file will be overwritten if the installer is run against the
-# same location.
-# 
-####################################################################
-#
-# Copyright 2016-2019 by the following contributors:
-#
-#   Continuus Technologies, LLC
-#   Enterprise Data Foundation, Inc.
-#   HexisData, Inc.
-#   HotQuant, Inc. 
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# version 2 as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
-#
-####################################################################
-
-@{
-    # Points to the shared deltaTest repo.
-    ModuleDir = "$ModuleDir"
-
-    # If true, tests will execute without user input or diff visualization. 
-    # Leave `$null to use shared default.
-    NoInput = `$null # SHARED DEFAULT: `$$NoInput
-	
-    # Tests will be run against this environment. Must be specified in $($ModuleDir)\shared_config.psd1
-    # Leave `$null to use shared default.
-    ActiveEnvironment = `$null # SHARED DEFAULT: "$ActiveEnvironment"
-	
-    # Path to Markit EDM command line executable.
-    # Leave `$null to use shared default.
-    MedmProcessAgentPath = `$null # SHARED DEFAULT: "$MedmProcessAgentPath" 
-	
-    # Path to text differencing engine executable.
-    TextDiffExe = `$null # SHARED DEFAULT: "$($SharedConfig.TextDiffExe)"
-	
-    # Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} will be replaced by the appropriate paths at run time.
-    # Leave `$null to use shared default.
-    TextDiffParams = `$null # SHARED DEFAULT: @("$($SharedConfig.TextDiffParams -Join """, """)")
-}
-"@ | Out-File -FilePath "$LocalDir\local_config.psd1"
-
-Write-Host "Done!"
-
-# Copy init script.
-Copy-Item -Path "$ModuleDir\Resources\PS\init.ps1" -Destination "$LocalDir\init.ps1"
-
-# Create environment variables.
-Write-Host "`nCreating %deltaTest% environment variable..." -NoNewline
-[Environment]::SetEnvironmentVariable('deltaTest', $LocalDir, 'Machine')
-Write-Host "Done!"
-
-Write-Host "Creating %deltaTestShared% environment variable..." -NoNewline
-[Environment]::SetEnvironmentVariable('deltaTestShared', $ModuleDir, 'Machine')
-Write-Host "Done!"
-
 # Check WinMerge installation.
 function Test-Installed( $program ) {
     
@@ -225,18 +155,53 @@ If (!$NoInput) {
     }
     Else {
         Write-Host 'Installing WinMerge... ' -NoNewline 
-        $WinMergeExePath = "$($PSScriptRoot | Split-Path -Parent)\WinMerge-2.14.0-Setup.exe"
-        $WinMergeExeParams = '/SILENT' # http://www.jrsoftware.org/ishelp/index.php?topic=setupcmdline
-        & $WinMergeExePath $WinMergeExeParams | Write-Host
+        $WinMergeInstallerPath = "$($PSScriptRoot | Split-Path -Parent)\WinMerge-2.14.0-Setup.exe"
+        $WinMergeInstallerParams = '/SILENT' # http://www.jrsoftware.org/ishelp/index.php?topic=setupcmdline
+        & $WinMergeInstallerPath $WinMergeInstallerParams | Write-Host
         Write-Host 'Done!'
     }
 }
+
+# Import deltaTest module.
+Import-Module "$env:deltaTestShared\Resources\PS\deltaTest.psm1" -Force
+
+# Write local config file. 
+Write-Host "`nWriting local config file..."
+
+# Create local config directory if it doesn't exist.
+if (!(Test-Path $env:deltaTest -PathType Container)) { New-Item $env:deltaTest -ItemType "directory" }
+
+# If there is an existing local config file...
+if ((Test-Path "$env:deltaTest\local_config.psd1" -PathType Leaf) -and ((Read-UserEntry -Label 'LOCAL CONFIG FILE ALREADY EXISTS. PRESERVE DATA?' -Default 'Y' -Pattern 'y|n') -eq 'y')) { 
+    # Load local config.
+    $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTest -FileName "local_config.psd1"
+
+    # Override params with local config.
+    $params = @{
+        NoInput = $LocalConfig.NoInput
+        ActiveEnvironment = $LocalConfig.ActiveEnvironment
+        MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath
+        TextDiffExe = $LocalConfig.TextDiffExe
+        TextDiffParams = $LocalConfig.TextDiffParams
+    }
+
+    # Write new local config file.
+    & "$env:deltaTestShared\Resources\PS\local.ps1" @params
+}
+
+# ... otherwise just overwrite local config file with new defaults.
+else { & "$env:deltaTestShared\Resources\PS\local.ps1" }
+
+Write-Host "`nDone!"
+
+# Copy init script.
+Copy-Item -Path "$env:deltaTestShared\Resources\PS\init.ps1" -Destination "$env:deltaTest\init.ps1"
 
 # Clear config variable so next init reloads it.
 $Global:deltaTestConfig = $null
 
 # END
 Write-Host "`nLocal deltaTest installation complete!"
-If (!$NoInput) { [void](Read-Host "`nPress Enter to exit") }
+[void](Read-Host "`nPress Enter to exit")
 
 

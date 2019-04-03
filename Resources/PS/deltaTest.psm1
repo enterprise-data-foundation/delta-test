@@ -45,13 +45,13 @@ function Confirm-File {
 		[string][Parameter(Mandatory = $True)] $FilePath,
 		[string][Parameter(Mandatory = $True)] $CertifiedFilePath,
 		[string]$TestName,
-        [bool]$NoInput = $Global:deltaTestConfig.NoInput,
+        [string]$NoInput = $Global:deltaTestConfig.NoInput,
 		[string]$TextDiffExe = $Global:deltaTestConfig.TextDiffExe,
 		[string[]]$TextDiffParams = $Global:deltaTestConfig.TextDiffParams
 	)  
 
     # Convert $NoInput to bool.
-    $NoInput = [System.Convert]::ToBoolean($NoInput)
+    if (!$NoInput) { $NoInput = [System.Convert]::ToBoolean($NoInput) }
 
     # Init result object.
 	$result = @{
@@ -251,18 +251,21 @@ function Invoke-deltaTest {
         [Parameter(Mandatory = $True)]
         [string]$TestPath,
 
-        [bool]$NoInput,
+        [string]$NoInput,
 
         [string]$ActiveEnvironment,
 
         [string]$MedmProcessAgentPath
     )
 
+    # Convert $NoInput to bool.
+    if (!$NoInput) { $NoInput = [System.Convert]::ToBoolean($NoInput) }
+
     Push-Location
 	
     $TempConfig = $Global:deltaTestConfig
 
-    if ($NoInput -ne $null) { $Global:deltaTestConfig.NoInput = [System.Convert]::ToBoolean($NoInput) }
+    if ($NoInput -ne $null) { $Global:deltaTestConfig.NoInput = $NoInput }
     if ($ActiveEnvironment) { $Global:deltaTestConfig.ActiveEnvironment = $ActiveEnvironment }
     if ($MedmProcessAgentPath) { $Global:deltaTestConfig.MedmProcessAgentPath = $MedmProcessAgentPath }
 
@@ -484,13 +487,17 @@ function Read-UserEntry {
         [Parameter(Mandatory = $True)]
         [string]$Label,
 
+        [string]$Prompt,
+
         [string]$Default,
 
         [string]$Pattern = ".+"
     )
 
     while (!$Result) {
-        Write-Host ("`n" + $Label.ToUpper())
+        Write-Host "`n$($Label.ToUpper())" -NoNewline 
+        Write-Host $(if ($Prompt) { ": $Prompt" } else { '' })
+
         Write-Host "Pattern: $Pattern"
         If ($Default) { 
             Write-Host "Default: $Default"
@@ -504,7 +511,7 @@ function Read-UserEntry {
             continue
         }
 
-        Write-Host ($Label + ": ") -NoNewline
+        Write-Host ("$Label`: ") -NoNewline
         Write-Host $Result -ForegroundColor Yellow
     }
 
