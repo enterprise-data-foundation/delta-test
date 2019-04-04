@@ -9,7 +9,7 @@
 # module. This should be the first line of every test and batch
 # script:
 #
-#   Invoke-Expression "$env:deltaTest\init.ps1"
+#   Invoke-Expression "$env:deltaTestLocal\init.ps1"
 #
 # This script will be copied to your local installation directory
 # during the local installation process.

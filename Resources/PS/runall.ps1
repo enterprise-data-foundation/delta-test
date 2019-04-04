@@ -43,7 +43,7 @@ If (!$Path) {
 
 Else {
     # Initialize deltaTest.
-    Invoke-Expression "$env:deltaTest\init.ps1"
+    Invoke-Expression "$env:deltaTestLocal\init.ps1"
 
     # Run all scripts in child directories.
     $result = @()

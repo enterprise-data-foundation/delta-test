@@ -8,7 +8,7 @@
 # upgrades to your test archive.
 #
 # Initialize deltaTest.
-  Invoke-Expression "$env:deltaTest\init.ps1"
+  Invoke-Expression "$env:deltaTestLocal\init.ps1"
 # 
 ####################################################################
 

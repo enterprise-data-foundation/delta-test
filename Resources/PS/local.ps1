@@ -107,7 +107,7 @@ function Write-LocalConfig {
     # Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} will be replaced by the appropriate paths at run time.
     TextDiffParams = $(if ($TextDiffParams) { "@('$($TextDiffParams -Join "', '")')" } else { '$null' }) # SHARED DEFAULT: @('$($SharedConfig.TextDiffParams -Join "', '")')
 }
-"@ | Out-File -FilePath "$env:deltaTest\local_config.psd1"
+"@ | Out-File -FilePath "$env:deltaTestLocal\local_config.psd1"
 }
 
 # Import deltaTest module.
@@ -120,7 +120,7 @@ if (!$Interactive) { Write-LocalConfig; Exit }
 
 do {
     # Load local config.
-    $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTest -FileName "local_config.psd1"
+    $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTestLocal -FileName "local_config.psd1"
     $NoInput = $LocalConfig.NoInput
     $ActiveEnvironment = $LocalConfig.ActiveEnvironment
     $MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath

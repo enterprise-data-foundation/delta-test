@@ -29,7 +29,7 @@
 ####################################################################
 
 # Initialize deltaTest.
-Invoke-Expression "$env:deltaTest\init.ps1"
+Invoke-Expression "$env:deltaTestLocal\init.ps1"
 
 # Display result & pause unless $deltaTestConfig.NoInput is $True.
 Show-Execution -Message "Hello, World!"

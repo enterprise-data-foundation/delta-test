@@ -33,7 +33,7 @@
 ####################################################################
 
 # Initialize deltaTest.
-Invoke-Expression "$env:deltaTest\init.ps1"
+Invoke-Expression "$env:deltaTestLocal\init.ps1"
 
 $DbServer = Read-UserEntry -Label "Database Server" -Default $(Get-ActiveEnvironment).MedmDbServer
 $DbName = Read-UserEntry -Label "Database Name" -Default $(Get-ActiveEnvironment).MedmDbName
