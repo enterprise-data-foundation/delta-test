@@ -494,12 +494,17 @@ function Read-UserEntry {
         [string]$Pattern = ".+"
     )
 
+    # Load shared config.
+    if (!$SharedConfig) { $SharedConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShared -FileName "shared_config.psd1" }
+
+    # Loop prompt to a valid response.
     while (!$Result) {
         Write-Host "`n$Label" -NoNewline -ForegroundColor $SharedConfig.Colors.Label
         if ($Description) { 
             Write-Host ': ' -NoNewline -ForegroundColor $SharedConfig.Colors.Label
             Write-Host $Description -ForegroundColor $SharedConfig.Colors.Description
         }
+        else { Write-Host }
 
         Write-Host 'Pattern: ' -NoNewline -ForegroundColor $SharedConfig.Colors.Label
         Write-Host $Pattern -ForegroundColor $SharedConfig.Colors.Pattern
