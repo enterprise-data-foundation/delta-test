@@ -487,7 +487,7 @@ function Read-UserEntry {
         [Parameter(Mandatory = $True)]
         [string]$Label,
 
-        [string]$Prompt,
+        [string]$Description,
 
         [string]$Default,
 
@@ -495,24 +495,34 @@ function Read-UserEntry {
     )
 
     while (!$Result) {
-        Write-Host "`n$($Label.ToUpper())" -NoNewline 
-        Write-Host $(if ($Prompt) { ": $Prompt" } else { '' })
-
-        Write-Host "Pattern: $Pattern"
-        If ($Default) { 
-            Write-Host "Default: $Default"
-            If (($Result = Read-Host "New value or Enter to accept default") -eq "") { $Result = $Default }
+        Write-Host "`n$Label" -NoNewline -ForegroundColor $SharedConfig.Colors.Label
+        if ($Description) { 
+            Write-Host ': ' -NoNewline -ForegroundColor $SharedConfig.Colors.Label
+            Write-Host $Description -ForegroundColor $SharedConfig.Colors.Description
         }
-        Else { $Result = Read-Host "Enter value" }
+
+        Write-Host 'Pattern: ' -NoNewline -ForegroundColor $SharedConfig.Colors.Label
+        Write-Host $Pattern -ForegroundColor $SharedConfig.Colors.Pattern
+
+        If ($Default) { 
+            Write-Host 'Default: ' -NoNewline -ForegroundColor $SharedConfig.Colors.Label
+            Write-Host $Default -ForegroundColor $SharedConfig.Colors.Default
+            Write-Host "New value or Enter to accept default: " -NoNewline -ForegroundColor $SharedConfig.Colors.Prompt
+            $Result = Read-Host
+            if (!$Result) { $Result = $Default }
+        }
+        Else { 
+            Write-Host "Enter value: " -NoNewline -ForegroundColor $SharedConfig.Colors.Prompt
+            $Result = Read-Host
+        }
 
         If ($Result -inotmatch $Pattern) {
-            Write-Host "Failed pattern match!" -ForegroundColor Magenta
+            Write-Host "Failed pattern match!" -ForegroundColor $SharedConfig.Colors.Error
             $Result = $null
             continue
         }
 
-        Write-Host ("$Label`: ") -NoNewline
-        Write-Host $Result -ForegroundColor Yellow
+        Write-Host ("$Label = $Result") -ForegroundColor $SharedConfig.Colors.Confirmation
     }
 
     return $Result

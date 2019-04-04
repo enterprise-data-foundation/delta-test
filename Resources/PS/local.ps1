@@ -96,13 +96,13 @@ function Write-LocalConfig {
 	
     # Tests will be run against this environment. Must be one of those 
     # specified in $env:deltaTestShared\shared_config.ps1
-    ActiveEnvironment = $(if ($ActiveEnvironment) { "'$ActiveEnvironment'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.ActiveEnvironment)'
+    ActiveEnvironment = $(if ($ActiveEnvironment -and $ActiveEnvironment -ne '$null') { "'$ActiveEnvironment'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.ActiveEnvironment)'
 	
     # Path to Markit EDM command line executable.
-    MedmProcessAgentPath = $(if ($MedmProcessAgentPath) { "'$MedmProcessAgentPath'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.MedmProcessAgentPath)' 
+    MedmProcessAgentPath = $(if ($MedmProcessAgentPath -and $MedmProcessAgentPath -ne '$null') { "'$MedmProcessAgentPath'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.MedmProcessAgentPath)' 
 	
     # Path to text differencing engine executable.
-    TextDiffExe = $(if ($TextDiffExe) { "'$TextDiffExe'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.TextDiffExe)'
+    TextDiffExe = $(if ($TextDiffExe -and $TextDiffExe -ne '$null') { "'$TextDiffExe'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.TextDiffExe)'
 	
     # Text differencing engine command line params. {{CurrentResult}} and {{CertifiedResult}} will be replaced by the appropriate paths at run time.
     TextDiffParams = $(if ($TextDiffParams) { "@('$($TextDiffParams -Join "', '")')" } else { '$null' }) # SHARED DEFAULT: @('$($SharedConfig.TextDiffParams -Join "', '")')
@@ -118,11 +118,17 @@ $SharedConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShared -FileNa
 
 if (!$Interactive) { Write-LocalConfig; Exit }
 
-Write-Host 'deltaTest 2.0.0 Local Config Manager'
-
 do {
-    Write-Host @"
+    # Load local config.
+    $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTest -FileName "local_config.psd1"
+    $NoInput = $LocalConfig.NoInput
+    $ActiveEnvironment = $LocalConfig.ActiveEnvironment
+    $MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath
+    $TextDiffExe = $LocalConfig.TextDiffExe
 
+    Write-Host "*** deltaTest $($SharedConfig.Version) Local Config Manager ***`n" -ForegroundColor $SharedConfig.Colors.Title
+    
+    Write-Host @"
 Please select from the following options. Set value to `$null to use shared default:
 
 1. Change NoInput 
@@ -143,22 +149,58 @@ Please select from the following options. Set value to `$null to use shared defa
 
 "@
     
-    do { $Choice = Read-Host "Enter your choice, or press Enter with no choice to exit" }
+    do { 
+        Write-Host "Enter your choice, or press Enter with no choice to exit: " -ForegroundColor $SharedConfig.Colors.Prompt -NoNewline
+        $Choice = Read-Host
+    }
     until (!$Choice -or $Choice -match '[1-4]')
 
     switch ($Choice) {
-        1 { 
+        '1' { 
             $NoInput = $(Read-UserEntry `
-                -Label 'NOINPUT' `
-                -Prompt 'When $true, suppresses user input and diff visualization for unattended testing.' `
+                -Label 'NoInput' `
+                -Description 'When $true, suppresses user input and diff visualization for unattended testing.' `
                 -Default "`$$(if($NoInput) { $NoInput } else { 'null' })" `
-                -Pattern '\$null|\$true|\$false' `
+                -Pattern '^\$(null|true|false)$' `
             ).TrimStart('$')
+            break
+        }
+        
+        '2' { 
+            $ActiveEnvironment = $(Read-UserEntry `
+                -Label 'ActiveEnvironment' `
+                -Description 'Sets the default testing environment on the local machine.' `
+                -Default $(if($ActiveEnvironment) { $ActiveEnvironment } else { '$null' }) `
+                -Pattern "^(\`$null|$($SharedConfig.Environments.Keys -join '|'))`$" `
+            )
+            break
+        }
+        
+        '3' { 
+            $MedmProcessAgentPath = $(Read-UserEntry `
+                -Label 'MedmProcessAgentPath' `
+                -Description 'Full path to CadisProcessAgent.exe on the local machine.' `
+                -Default $(if($MedmProcessAgentPath) { $MedmProcessAgentPath } else { '$null' }) `
+                -Pattern ".+" `
+            )
+            break
+        }
+        
+        '4' { 
+            $TextDiffExe = $(Read-UserEntry `
+                -Label 'TextDiffExe' `
+                -Description 'Full path to text differencing engine .exe on the local machine.' `
+                -Default $(if($TextDiffExe) { $TextDiffExe } else { '$null' }) `
+                -Pattern ".+" `
+            )
             break
         }
     }
 
-    if ($Choice) { Write-LocalConfig }
+    if ($Choice) { 
+        Write-LocalConfig 
+        Write-Host "`nLocal Config Updated!`n`n" -ForegroundColor "White"
+    }
 
 }
 until (!$Choice)
