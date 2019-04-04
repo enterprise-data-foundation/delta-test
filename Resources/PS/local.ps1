@@ -61,7 +61,7 @@ function Write-LocalConfig {
     $LocalConfigData = @"
 ####################################################################
 #
-# DELTATEST v2.0.0
+# DELTATEST v$($SharedConfig.Version)
 #
 # Local Config File
 #
@@ -110,6 +110,10 @@ function Write-LocalConfig {
 "@ | Out-File -FilePath "$env:deltaTestLocal\local_config.psd1"
 }
 
+# Import environment variables if necessary.
+if (!$env:deltaTestLocal) { $env:deltaTestLocal = [System.Environment]::GetEnvironmentVariable("deltaTestLocal", "Machine") }
+if (!$env:deltaTestShared) { $env:deltaTestShared = [System.Environment]::GetEnvironmentVariable("deltaTestShared", "Machine") }
+
 # Import deltaTest module.
 Import-Module "$env:deltaTestShared\Resources\PS\deltaTest.psm1"
 
@@ -126,7 +130,7 @@ do {
     $MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath
     $TextDiffExe = $LocalConfig.TextDiffExe
 
-    Write-Host "*** deltaTest $($SharedConfig.Version) Local Config Manager ***`n" -ForegroundColor $SharedConfig.Colors.Title
+    Write-Host "*** deltaTest v$($SharedConfig.Version) Local Config Manager ***`n" -ForegroundColor $SharedConfig.Colors.Title
     
     Write-Host @"
 Please select from the following options. Set value to `$null to use shared default:

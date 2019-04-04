@@ -84,12 +84,13 @@ Write-Host "`nCreating %deltaTestLocal% environment variable..." -NoNewline
 [Environment]::SetEnvironmentVariable('deltaTestLocal', $LocalDir, 'Machine')
 Write-Host "Done!"
 
+$SharedDir = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
 Write-Host "Creating %deltaTestShared% environment variable..." -NoNewline
-[Environment]::SetEnvironmentVariable('deltaTestShared', $($PSScriptRoot | Split-Path -Parent | Split-Path -Parent), 'Machine')
+[Environment]::SetEnvironmentVariable('deltaTestShared', $SharedDir, 'Machine')
 Write-Host "Done!"
 
 # Validate & hydrate params.
-$SharedConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShared -FileName 'shared_config.psd1'
+$SharedConfig = Import-LocalizedData -BaseDirectory $SharedDir -FileName 'shared_config.psd1'
 
 if (!$NoInput) { $NoInput = $SharedConfig.NoInput }
 if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
@@ -163,18 +164,18 @@ If ($NoInput -eq $false) {
 }
 
 # Import deltaTest module.
-Import-Module "$env:deltaTestShared\Resources\PS\deltaTest.psm1" -Force
+Import-Module "$SharedDir\Resources\PS\deltaTest.psm1" -Force
 
 # Write local config file. 
 Write-Host "`nWriting local config file..."
 
 # Create local config directory if it doesn't exist.
-if (!(Test-Path $env:deltaTestLocal -PathType Container)) { New-Item $env:deltaTestLocal -ItemType "directory" }
+if (!(Test-Path $LocalDir -PathType Container)) { [void](New-Item $LocalDir -ItemType "directory") }
 
 # If there is an existing local config file...
-if ((Test-Path "$env:deltaTestLocal\local_config.psd1" -PathType Leaf) -and ((Read-UserEntry -Label 'LOCAL CONFIG FILE ALREADY EXISTS. PRESERVE DATA?' -Default 'Y' -Pattern 'y|n') -eq 'y')) { 
+if ((Test-Path "$LocalDir\local_config.psd1" -PathType Leaf) -and ((Read-UserEntry -Label 'CONFIRMATION' -Description 'Local config file already exists. Preserve data?' -Default 'Y' -Pattern 'y|n') -eq 'y')) { 
     # Load local config.
-    $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTestLocal -FileName "local_config.psd1"
+    $LocalConfig = Import-LocalizedData -BaseDirectory $LocalDir -FileName "local_config.psd1"
 
     # Override params with local config.
     $params = @{
@@ -186,16 +187,16 @@ if ((Test-Path "$env:deltaTestLocal\local_config.psd1" -PathType Leaf) -and ((Re
     }
 
     # Write new local config file.
-    & "$env:deltaTestShared\Resources\PS\local.ps1" @params
+    & "$SharedDir\Resources\PS\local.ps1" @params
 }
 
 # ... otherwise just overwrite local config file with new defaults.
-else { & "$env:deltaTestShared\Resources\PS\local.ps1" }
+else { & "$SharedDir\Resources\PS\local.ps1" }
 
 Write-Host "`nDone!"
 
 # Copy init script.
-Copy-Item -Path "$env:deltaTestShared\Resources\PS\init.ps1" -Destination "$env:deltaTestLocal\init.ps1"
+Copy-Item -Path "$SharedDir\Resources\PS\init.ps1" -Destination "$LocalDir\init.ps1"
 
 # Clear config variable so next init reloads it.
 $Global:deltaTestConfig = $null
