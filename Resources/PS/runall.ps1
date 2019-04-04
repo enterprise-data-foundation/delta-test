@@ -52,7 +52,7 @@ Else {
         "Running " + $FilePath | Write-Host
         $parent = Split-Path -Path $FilePath -Parent
         Set-Location -Path $parent
-        # $result += Invoke-deltaTest -TestPath $FilePath -NoInput $true
+        $result += Invoke-deltaTest -TestPath $FilePath -NoInput $true
     }
 
     Write-Host "All scripts executed!"
