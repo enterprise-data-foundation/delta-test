@@ -50,7 +50,7 @@ $MinInt = Read-UserEntry -Label "Min Integer" -Default "1000" -Pattern "-?\d+"
 $MaxInt = Read-UserEntry -Label "Max Integer" -Default "9999" -Pattern "-?\d+"
 $MaxStrLen = Read-UserEntry -Label "Max String Length" -Default "32" -Pattern "\d+"
 
-Write-Host $("Generating test data for table [{0}].[{1}].[{2}].[{3}]..." -f $DbServer, $DbName, $TableSchema, $TableName)
+Write-Host $("`nGenerating test data for table [{0}].[{1}].[{2}].[{3}]..." -f $DbServer, $DbName, $TableSchema, $TableName)
 
 Export-CsvTestData `
     -DbServer $DbServer `
@@ -69,5 +69,5 @@ Export-CsvTestData `
     -MaxInt ([int]$MaxInt) `
     -MaxStrLen ([int]$MaxStrLen)
 
-Write-Host "Test data generation complete!"
+Write-Host "Test data generation complete!`n"
 [void](Read-Host "Press Enter to exit") 
