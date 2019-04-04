@@ -50,10 +50,9 @@ Import-Module "$env:deltaTestShared\Resources\PS\deltaTest.psm1" -Force
 $LocalConfig = Import-LocalizedData -FileName 'local_config.psd1'
 
 # Load shared config.
-$Global:deltaTestConfig = Import-LocalizedData -BaseDirectory $LocalConfig.ModuleDir -FileName 'shared_config.psd1'
+$Global:deltaTestConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShared -FileName 'shared_config.psd1'
 
 # Override shared config with local settings.
-$deltaTestConfig | Add-Member "ModuleDir" $LocalConfig.ModuleDir
 if ($LocalConfig.NoInput -ne $null) { $deltaTestConfig.NoInput = $LocalConfig.NoInput }
 if ($LocalConfig.ActiveEnvironment -ne $null) { $deltaTestConfig.ActiveEnvironment = $LocalConfig.ActiveEnvironment }
 if ($LocalConfig.MedmProcessAgentPath -ne $null) { $deltaTestConfig.MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath }
