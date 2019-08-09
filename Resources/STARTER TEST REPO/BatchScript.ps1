@@ -10,7 +10,7 @@
 #   -TestPath "<Path to test>"
 #   [-NoInput $true|$false]
 #   [-ActiveEnvironment "<Active Environment>"]
-#   [-MedmProcessAgentPath "<Medm Process Agent Path>"]
+#   [-ProcessAgentPath "<Medm Process Agent Path>"]
 # 
 # The optional arguments override corresponding shared or local 
 # $deltaTestConfig settings for the duration of test execution. 

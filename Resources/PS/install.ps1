@@ -37,7 +37,7 @@ param(
     [string]$LocalDir = "C:\deltaTest",
     [string]$NoInput,
     [string]$ActiveEnvironment,
-    [string]$MedmProcessAgentPath
+    [string]$ProcessAgentPath
 )
 
 # ELEVATE SCRIPT IF NECESSARY.
@@ -67,7 +67,7 @@ else
     if ($LocalDir) { $newProcess.Arguments += " -LocalDir '$LocalDir'" }
     if ($NoInput) { $newProcess.Arguments += " -NoInput `$$NoInput" }
     if ($ActiveEnvironment) { $newProcess.Arguments += " -ActiveEnvironment '$ActiveEnvironment'" } 
-    if ($MedmProcessAgentPath) { $newProcess.Arguments += " -MedmProcessAgentPath '$MedmProcessAgentPath'" } 
+    if ($ProcessAgentPath) { $newProcess.Arguments += " -ProcessAgentPath '$ProcessAgentPath'" } 
 
     $newProcess.Verb = "runas";
     [System.Diagnostics.Process]::Start($newProcess);
@@ -94,7 +94,7 @@ $SharedConfig = Import-LocalizedData -BaseDirectory $SharedDir -FileName 'shared
 
 if (!$NoInput) { $NoInput = $SharedConfig.NoInput }
 if (!$ActiveEnvironment) { $ActiveEnvironment = $SharedConfig.ActiveEnvironment }
-if (!$MedmProcessAgentPath) { $MedmProcessAgentPath = $SharedConfig.MedmProcessAgentPath }
+if (!$ProcessAgentPath) { $ProcessAgentPath = $SharedConfig.ProcessAgentPath }
 
 # Check PS Version
 Write-Host "`nChecking PowerShell version..."
@@ -181,7 +181,7 @@ if ((Test-Path "$LocalDir\local_config.psd1" -PathType Leaf) -and ((Read-UserEnt
     $params = @{
         NoInput = $LocalConfig.NoInput
         ActiveEnvironment = $LocalConfig.ActiveEnvironment
-        MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath
+        ProcessAgentPath = $LocalConfig.ProcessAgentPath
         TextDiffExe = $LocalConfig.TextDiffExe
         TextDiffParams = $LocalConfig.TextDiffParams
     }

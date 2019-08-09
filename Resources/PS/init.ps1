@@ -55,6 +55,6 @@ $Global:deltaTestConfig = Import-LocalizedData -BaseDirectory $env:deltaTestShar
 # Override shared config with local settings.
 if ($LocalConfig.NoInput -ne $null) { $deltaTestConfig.NoInput = $LocalConfig.NoInput }
 if ($LocalConfig.ActiveEnvironment -ne $null) { $deltaTestConfig.ActiveEnvironment = $LocalConfig.ActiveEnvironment }
-if ($LocalConfig.MedmProcessAgentPath -ne $null) { $deltaTestConfig.MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath }
+if ($LocalConfig.ProcessAgentPath -ne $null) { $deltaTestConfig.ProcessAgentPath = $LocalConfig.ProcessAgentPath }
 if ($LocalConfig.TextDiffExe -ne $null) { $deltaTestConfig.TextDiffExe = $LocalConfig.TextDiffExe }
 if ($LocalConfig.TextDiffParams -ne $null) { $deltaTestConfig.TextDiffParams = $LocalConfig.TextDiffParams }

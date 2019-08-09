@@ -34,7 +34,7 @@ param(
     [string]$LocalDir = "C:\deltaTest",
     [string]$NoInput,
     [string]$ActiveEnvironment,
-    [string]$MedmProcessAgentPath
+    [string]$ProcessAgentPath
 )
 
 # ELEVATE SCRIPT IF NECESSARY.

@@ -13,7 +13,7 @@
 # -ActiveEnvironment: must be one of those specified in deltaTest 
 #  shared repository file shared_config.psd1
 #
-# -MedmProcessAgentPath: The full path to CadisProcessAgent.exe.
+# -ProcessAgentPath: The full path to CadisProcessAgent.exe.
 #  Use if Markit EDM is installed locally in a non-default 
 #  directory.
 #
@@ -51,7 +51,7 @@
 param(
     [string]$NoInput,
     [string]$ActiveEnvironment,
-    [string]$MedmProcessAgentPath,
+    [string]$ProcessAgentPath,
     [string]$TextDiffExe,
     [string[]]$TextDiffParams,
     [switch]$Interactive
@@ -99,7 +99,7 @@ function Write-LocalConfig {
     ActiveEnvironment = $(if ($ActiveEnvironment -and $ActiveEnvironment -ne '$null') { "'$ActiveEnvironment'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.ActiveEnvironment)'
 	
     # Path to Markit EDM command line executable.
-    MedmProcessAgentPath = $(if ($MedmProcessAgentPath -and $MedmProcessAgentPath -ne '$null') { "'$MedmProcessAgentPath'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.MedmProcessAgentPath)' 
+    ProcessAgentPath = $(if ($ProcessAgentPath -and $ProcessAgentPath -ne '$null') { "'$ProcessAgentPath'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.ProcessAgentPath)' 
 	
     # Path to text differencing engine executable.
     TextDiffExe = $(if ($TextDiffExe -and $TextDiffExe -ne '$null') { "'$TextDiffExe'" } else { '$null' }) # SHARED DEFAULT: '$($SharedConfig.TextDiffExe)'
@@ -127,7 +127,7 @@ do {
     $LocalConfig = Import-LocalizedData -BaseDirectory $env:deltaTestLocal -FileName "local_config.psd1"
     $NoInput = $LocalConfig.NoInput
     $ActiveEnvironment = $LocalConfig.ActiveEnvironment
-    $MedmProcessAgentPath = $LocalConfig.MedmProcessAgentPath
+    $ProcessAgentPath = $LocalConfig.ProcessAgentPath
     $TextDiffExe = $LocalConfig.TextDiffExe
 
     Write-Host "*** deltaTest v$($SharedConfig.Version) Local Config Manager ***`n" -ForegroundColor $SharedConfig.Colors.Title
@@ -143,9 +143,9 @@ Please select from the following options. Set value to `$null to use shared defa
    Current value: $(if($ActiveEnvironment) { $ActiveEnvironment } else { '$null' })
    Shared default: $($SharedConfig.ActiveEnvironment)
 
-3. Change MedmProcessAgentPath 
-   Current value: $(if($MedmProcessAgentPath) { $MedmProcessAgentPath } else { '$null' })
-   Shared default: $($SharedConfig.MedmProcessAgentPath)
+3. Change ProcessAgentPath 
+   Current value: $(if($ProcessAgentPath) { $ProcessAgentPath } else { '$null' })
+   Shared default: $($SharedConfig.ProcessAgentPath)
 
 4. Change TextDiffExe 
    Current value: $(if($TextDiffExe) { $TextDiffExe } else { '$null' })
@@ -181,10 +181,10 @@ Please select from the following options. Set value to `$null to use shared defa
         }
         
         '3' { 
-            $MedmProcessAgentPath = $(Read-UserEntry `
-                -Label 'MedmProcessAgentPath' `
+            $ProcessAgentPath = $(Read-UserEntry `
+                -Label 'ProcessAgentPath' `
                 -Description 'Full path to CadisProcessAgent.exe on the local machine.' `
-                -Default $(if($MedmProcessAgentPath) { $MedmProcessAgentPath } else { '$null' }) `
+                -Default $(if($ProcessAgentPath) { $ProcessAgentPath } else { '$null' }) `
                 -Pattern ".+" `
             )
             break

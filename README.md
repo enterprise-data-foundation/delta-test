@@ -109,7 +109,7 @@ Install-Module -Name SqlServer -Force
 
 By default, **deltaTest** is expecting Markit EDM (MEDM) v17.1.132.0 to be installed in the default installation directory on your local machine. If you are running a different version of MEDM, or from a different directory, indicate the Process Agent Path when you run the **+INSTALL** script:
 
-![MedmProcessAgentPath](https://enterprise-data.org/wp-content/uploads/2019/03/MedmProcessAgentPath.png)
+![ProcessAgentPath](https://enterprise-data.org/wp-content/uploads/2019/03/ProcessAgentPath.png)
 
 [Back to Top](#welcome-to-deltatest)
 
@@ -172,7 +172,7 @@ To create a new global variable, simply add it to *config.ps1*.
 | Global Variable | Description | Default Value |
 |:--|:--|:--|
 | ActiveEnvironment | Sets the environment against which tests will be executed. Leverages shared script *config.ps1* to set relevant global variables. | `"DEV"` |
-| MedmProcessAgentPath | The local path to the MEDM Process Agent executable. This path will vary based on the MEDM version in use. Should be consistent across the team. | `"C:\Program Files\Markit Group\Markit EDM_17_1_132_0\CadisProcessAgent.exe"`|
+| ProcessAgentPath | The local path to the MEDM Process Agent executable. This path will vary based on the MEDM version in use. Should be consistent across the team. | `"C:\Program Files\Markit Group\Markit EDM_17_1_132_0\CadisProcessAgent.exe"`|
 | MedmDbServer | The SQL Server of the MEDM environment against which the test will execute. | `"DbServer"` |
 | MedmDbName | The SQL Server database name of the MEDM environment against which the test will execute. | `"DbName"` |
 | TextDiffExe | The local path to your text comparison engine's executable (WinMerge by default). | `"C:\Program Files (x86)\WinMerge\WinMergeU.exe"` |
@@ -319,7 +319,7 @@ Invoke-MedmComponent `
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| -ProcessAgentPath | Optional. Path to command line executable for target MEDM version. Defaults to the value of `$Global:MedmProcessAgentPath`. <br /><br />Ex: `-ProcessAgentPath "C:\Program Files\Markit Group\Markit EDM_10_5_3_1\CadisProcessAgent.exe"` |
+| -ProcessAgentPath | Optional. Path to command line executable for target MEDM version. Defaults to the value of `$Global:ProcessAgentPath`. <br /><br />Ex: `-ProcessAgentPath "C:\Program Files\Markit Group\Markit EDM_10_5_3_1\CadisProcessAgent.exe"` |
 | -DbServer | Optional. The target SQL Server database server address. s to the value of `$Global:MedmDbServer`. <br /><br />Ex: `-DbServer "DbServer"` |
 | -DbName | Optional. The target SQL Server database name. Defaults to the value of `$Global:MedmDbName`.<br /><br />Ex: `-DbName "DbName"` |
 | -SetupSqlDir | Optional. A directory containing SQL scripts to be executed prior to component invocation. Relative paths will be resolved relative to the current directory. If omitted, defaults to the current directory. <br /><br />Ex: `-SetupSqlDir ".\SetupSql"` |
@@ -478,7 +478,7 @@ Test-MedmComponent `
 
 | Parameter | Description                                                  |
 | --------- | ------------------------------------------------------------ |
-| -ProcessAgentPath | Optional. Path to command line executable for target MEDM version. Defaults to the value of `$Global:MedmProcessAgentPath`. <br /><br />Ex: `-ProcessAgentPath "C:\Program Files\Markit Group\Markit EDM_10_5_3_1\CadisProcessAgent.exe"` |
+| -ProcessAgentPath | Optional. Path to command line executable for target MEDM version. Defaults to the value of `$Global:ProcessAgentPath`. <br /><br />Ex: `-ProcessAgentPath "C:\Program Files\Markit Group\Markit EDM_10_5_3_1\CadisProcessAgent.exe"` |
 | -DbServer | Optional. The target SQL Server database server address. Defaults to the value of `$Global:MedmDbServer`. <br /><br />Ex: `-DbServer "DbServer"` |
 | -DbName | Optional. The target SQL Server database name. Defaults to the value of `$Global:MedmDbName`.<br /><br />Ex: `-DbName "DbName"` |
 | -SetupSqlDir | Optional. A directory containing SQL scripts to be executed prior to component invocation. Relative paths will be resolved relative to the current directory. If omitted, defaults to the current directory. <br /><br />Ex: `-SetupSqlDir ".\SetupSql"` |

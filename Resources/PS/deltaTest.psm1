@@ -187,18 +187,18 @@ function Get-ActiveEnvironment {
 # Returns a list of files under a path that optionally match Regex patterns for inclusion or exclusion.
 function Get-Files {
     Param(
-        [string]$Path = $pwd, 
+        [string]$Dir = $pwd, 
         [string[]]$Include, 
         [string[]]$Exclude
     ) 
 
     $files = @()
 
-    foreach ($item in Get-ChildItem $Path)
+    foreach ($item in Get-ChildItem $Dir)
     {
         if (Test-Path $item.FullName -PathType Container) 
         {
-            Get-Files $item.FullName $include $exclude
+            Get-Files $item.FullName $Include $Exclude
             continue
         } 
 
@@ -255,7 +255,7 @@ function Invoke-deltaTest {
 
         [string]$ActiveEnvironment,
 
-        [string]$MedmProcessAgentPath
+        [string]$ProcessAgentPath
     )
 
     # Convert $NoInput to bool.
@@ -267,7 +267,7 @@ function Invoke-deltaTest {
 
     if ($NoInput -ne $null) { $Global:deltaTestConfig.NoInput = $NoInput }
     if ($ActiveEnvironment) { $Global:deltaTestConfig.ActiveEnvironment = $ActiveEnvironment }
-    if ($MedmProcessAgentPath) { $Global:deltaTestConfig.MedmProcessAgentPath = $MedmProcessAgentPath }
+    if ($ProcessAgentPath) { $Global:deltaTestConfig.ProcessAgentPath = $ProcessAgentPath }
 
     "Running " + $TestPath | Out-Host
     $parent = Split-Path -Path $TestPath -Parent
@@ -285,7 +285,7 @@ function Invoke-deltaTest {
 function Invoke-MedmComponent {
     [CmdletBinding(SupportsShouldProcess = $True)]
 	Param(
-        [string]$MedmProcessAgentPath = $Global:deltaTestConfig.MedmProcessAgentPath,
+        [string]$ProcessAgentPath = $Global:deltaTestConfig.ProcessAgentPath,
         
         [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
         
@@ -324,8 +324,8 @@ function Invoke-MedmComponent {
 
 	# Execute MEDM solution.
     "`nBeginning execution of MEDM $($ComponentType) `"$($ComponentName)`" on DB $($DbServer)\$($DbName)" | Write-Host  
-    "`nEXECUTING $($MedmProcessAgentPath) $($params)`n" | Write-Host
-    if ($PSCmdlet.ShouldProcess("MEDM $($ComponentType) $($ComponentName)")) {& $MedmProcessAgentPath $params  | Write-Host }
+    "`nEXECUTING $($ProcessAgentPath) $($params)`n" | Write-Host
+    if ($PSCmdlet.ShouldProcess("MEDM $($ComponentType) $($ComponentName)")) {& $ProcessAgentPath $params  | Write-Host }
     "Completed execution of MEDM $($ComponentType) `"$($ComponentName)`" on DB $($DbServer)\$($DbName)`n" | Write-Host  
 
     # Invoke cleanup scripts.
@@ -549,13 +549,17 @@ function Show-Execution {
     [void](Read-Host "Press Enter to continue") 
 }
 
-function Test-Installed( $program ) {
-    
+function Test-Installed {
+    Param(
+		[Parameter(Mandatory = $True)]
+        [string]$Program
+    )
+
     $x86 = ((Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall") |
-        Where-Object { $_.GetValue( "DisplayName" ) -like "*$program*" } ).Length -gt 0;
+        Where-Object { $_.GetValue( "DisplayName" ) -like "*$Program*" } ).Length -gt 0;
 
     $x64 = ((Get-ChildItem "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall") |
-        Where-Object { $_.GetValue( "DisplayName" ) -like "*$program*" } ).Length -gt 0;
+        Where-Object { $_.GetValue( "DisplayName" ) -like "*$Program*" } ).Length -gt 0;
 
     return $x86 -or $x64;
 }
@@ -564,7 +568,7 @@ function Test-MedmComponent {
     [CmdletBinding(SupportsShouldProcess = $True)]
 
     Param(
-        [string]$MedmProcessAgentPath = $Global:deltaTestConfig.MedmProcessAgentPath,
+        [string]$ProcessAgentPath = $Global:deltaTestConfig.ProcessAgentPath,
         
         [string]$DbServer = $(Get-ActiveEnvironment).MedmDbServer,
         
@@ -611,7 +615,7 @@ function Test-MedmComponent {
     # Invoke setup scripts and MEDM component.
     if (-not($SkipProcess)) {
         Invoke-MedmComponent `
-            -MedmProcessAgentPath $MedmProcessAgentPath `
+            -ProcessAgentPath $ProcessAgentPath `
             -DbServer $DbServer `
             -DbName $DbName `
 		    -ComponentType $ComponentType `
