@@ -30,13 +30,6 @@
 #
 ####################################################################
 
-param(
-    [string]$LocalDir = "C:\deltaTest",
-    [string]$NoInput,
-    [string]$ActiveEnvironment,
-    [string]$ProcessAgentPath
-)
-
 # ELEVATE SCRIPT IF NECESSARY.
 
 # Get the ID and security principal of the current user account
