@@ -5,7 +5,7 @@ FROM dbo.t_Load_FileMonitor
 WHERE FileName LIKE 'BBO\_SEC\__.psv' ESCAPE '\'
 ORDER BY TopRunId DESC
 
-EXEC dbo.[USP_Core_DumpData] 
+EXEC dbo.[usp_Core_Query] 
 	@TableSchema = 'dbo',
 	@TableName = 't_Load_FileMonitor',
 	@ColumnAction = 'E',
