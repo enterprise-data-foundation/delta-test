@@ -3,7 +3,7 @@ GO
 SET ANSI_NULLS ON
 GO
 
-CREATE PROCEDURE dbo.[usp_Core_Query] 
+CREATE PROCEDURE dbo.[usp_Core_DumpData] 
 	@TableSchema nvarchar(128) = 'dbo',
 	@TableName nvarchar(128),
 	@ColumnAction CHAR(1) = 'E', -- [I]nclude | [E]xclude
