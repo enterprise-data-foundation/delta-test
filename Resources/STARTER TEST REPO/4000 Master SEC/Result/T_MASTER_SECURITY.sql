@@ -1,6 +1,6 @@
 DECLARE @Where nvarchar(max)
 
-EXEC dbo.[USP_Core_DumpData] 
+EXEC dbo.[usp_Core_Query] 
 	@TableSchema = 'dbo',
 	@TableName = 'T_MASTER_SECURITY',
 	@ColumnAction = 'E',
