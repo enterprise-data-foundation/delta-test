@@ -1,4 +1,4 @@
-EXEC dbo.[USP_Core_DumpData] 
+EXEC dbo.[usp_Core_Query] 
 	@TableSchema = 'dbo',
 	@TableName = 'v_Exception_Xref',
 	@ColumnAction = 'E',
