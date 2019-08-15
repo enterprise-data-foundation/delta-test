@@ -5,7 +5,7 @@ FROM dbo.t_Exception_Stage
 WHERE ExceptionCode = 999999
 ORDER BY ExceptionStageId DESC
 
-EXEC dbo.[USP_Core_DumpData] 
+EXEC dbo.[usp_Core_Query] 
 	@TableSchema = 'dbo',
 	@TableName = 't_Log',
 	@ColumnAction = 'E',
