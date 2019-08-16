@@ -51,7 +51,7 @@ function Confirm-File {
 	)  
 
     # Convert $NoInput to bool.
-    if (!$NoInput) { $NoInput = [System.Convert]::ToBoolean($NoInput) }
+    [bool]$NoInput = [System.Convert]::ToBoolean($NoInput) 
 
     # Init result object.
 	$result = @{
