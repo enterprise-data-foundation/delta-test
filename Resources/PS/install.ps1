@@ -136,18 +136,10 @@ Else {
     Write-Host "Done!"
 }
 
+# Import deltaTest module.
+Import-Module "$SharedDir\Resources\PS\deltaTest.psm1" -Force
+
 # Check WinMerge installation.
-function Test-Installed( $program ) {
-    
-    $x86 = ((Get-ChildItem 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall') |
-        Where-Object { $_.GetValue('DisplayName') -like "*$program*" } ).Length -gt 0;
-
-    $x64 = ((Get-ChildItem "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall") |
-        Where-Object { $_.GetValue('DisplayName') -like "*$program*" } ).Length -gt 0;
-
-    return $x86 -or $x64;
-}
-
 If ($NoInput -eq $false) {
     Write-Host "`nChecking WinMerge installation..."
 
@@ -162,9 +154,6 @@ If ($NoInput -eq $false) {
         Write-Host 'Done!'
     }
 }
-
-# Import deltaTest module.
-Import-Module "$SharedDir\Resources\PS\deltaTest.psm1" -Force
 
 # Write local config file. 
 Write-Host "`nWriting local config file..."
