@@ -146,7 +146,7 @@ function Export-CsvTestData {
 
     $Rows = @()
     For ($i = 0; $i -lt $RowCount; $i++) {
-        $Row = New-Object –TypeName PSObject
+        $Row = New-Object â€“TypeName PSObject
 
         $Columns | ForEach {
             $Column = $_
@@ -156,7 +156,7 @@ function Export-CsvTestData {
 
                 ".*char" { 
                     $StrLen = $(@($(If ($Column.CHARACTER_MAXIMUM_LENGTH -eq -1) { $MaxStrLen } Else { $Column.CHARACTER_MAXIMUM_LENGTH }), $MaxStrLen) | measure -Minimum).Minimum
-                    $Value = -join((65..90) <# + (97..122) #> | Get-Random -Count $StrLen | % {[char]$_}) 
+                    $Value = -join(1..$StrLen | ForEach-Object {65..90 | Get-Random} | % {[char]$_}) 
                 }
 
                 "date.*|.*time2?" { 
