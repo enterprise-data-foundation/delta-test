@@ -17,8 +17,6 @@ Other features:
 
 # Links
 
-[Current Release](https://github.com/enterprise-data-foundation/delta-test/tree/v2.0.0)
-
 [Official Website](https://enterprise-data.org)
 
 [deltaTest in a Nutshell](https://enterprise-data.org/2019/01/12/delta-test-in-a-nutshell/)
