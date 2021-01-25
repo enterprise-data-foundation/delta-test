@@ -111,18 +111,25 @@ Else {
 }	
 
 # Check execution policy.
-Write-Host "`nChecking execution policy..."
-$CurrentExecutionPolicy = (Get-ExecutionPolicy).ToString()
-Write-Host "Current Execution Policy: $CurrentExecutionPolicy"
+# Write-Host "`nChecking execution policy..."
+# $CurrentExecutionPolicy = (Get-ExecutionPolicy).ToString()
+# Write-Host "Current Execution Policy: $CurrentExecutionPolicy"
 
-If (("Unrestricted", "Bypass").Contains($CurrentExecutionPolicy)) {
-    Write-Host "No change required."
-}
-Else {
-    Write-Host "Setting Execution Policy to Unrestricted... " -NoNewline
-    Set-ExecutionPolicy Unrestricted -Force
-    Write-Host "Done!"
-}
+# If (("Unrestricted", "Bypass").Contains($CurrentExecutionPolicy)) {
+#     Write-Host "No change required."
+# }
+# Else {
+#     Write-Host "Setting Execution Policy to Unrestricted... " -NoNewline
+#     Set-ExecutionPolicy Unrestricted -Force
+#     Write-Host "Done!"
+# }
+
+# Eliminate execution policy elevation from Run with PowerShell script execution.
+Write-Host "`nEliminate execution policy elevation from 'Run with PowerShell' script execution..."
+
+Set-Item -Path "HKLM:\Software\Classes\Microsoft.PowerShellScript.1\Shell\0\Command" -Value "`"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`" `"-Command`" `"& '%1'`""
+
+Write-Host "Done!"
 
 # Check SqlServer module.
 Write-Host "`nChecking SqlServer module..."
